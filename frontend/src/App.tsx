@@ -5,6 +5,7 @@ type Language = "en" | "ta";
 type Citation = { id: string; title: string; url: string; owner: string; locator?: string; status: string; desk_checked_at?: string; human_verified_at?: string | null };
 type Answer = { text: string; citations: Citation[]; mode: "ai" | "search"; warning?: string };
 type Turn = { question: string; answer: Answer };
+type SchemeCard = { id: string; title: string; department: string; category: string; overview: string; url: string; source_id: string; status: string; eligibility_enabled: boolean };
 
 const copy = {
   en: {
@@ -22,6 +23,10 @@ const copy = {
     sources: "Official sources",
     sourceIntro: "Start with verified government portals and scheme directories.",
     sourceCount: "SOURCE LIBRARY",
+    explore: "Explore a starting point",
+    exploreIntro: "Browse programs listed in official scheme directories.",
+    unverified: "Rules not verified",
+    openDirectory: "Open official directory",
     sourceEmpty: "Source library is loading…",
     askAgain: "Ask another question",
     evidence: "Evidence & links",
@@ -51,6 +56,10 @@ const copy = {
     sources: "அதிகாரப்பூர்வ ஆதாரங்கள்",
     sourceIntro: "அரசுத் தளங்கள் மற்றும் திட்டத் தகவல்களிலிருந்து தொடங்குங்கள்.",
     sourceCount: "ஆதாரத் தொகுப்பு",
+    explore: "இங்கே தொடங்கலாம்",
+    exploreIntro: "அதிகாரப்பூர்வத் திட்டக் கோப்பகங்களில் உள்ள திட்டங்களைப் பாருங்கள்.",
+    unverified: "விதிகள் சரிபார்க்கப்படவில்லை",
+    openDirectory: "அதிகாரப்பூர்வக் கோப்பகத்தைத் திறக்கவும்",
     sourceEmpty: "ஆதாரத் தொகுப்பு ஏற்றப்படுகிறது…",
     askAgain: "மற்றொரு கேள்வி கேளுங்கள்",
     evidence: "ஆதாரங்கள் மற்றும் இணைப்புகள்",
@@ -92,6 +101,7 @@ function App() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<Citation[]>([]);
+  const [schemes, setSchemes] = useState<SchemeCard[]>([]);
   const [serviceError, setServiceError] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const t = copy[language];
@@ -110,6 +120,13 @@ function App() {
       .then((data: { sources: Citation[] }) => setSources(data.sources ?? []))
       .catch(() => setServiceError(true));
   }, []);
+
+  useEffect(() => {
+    fetch(`/api/schemes?language=${language}`)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: { schemes: SchemeCard[] }) => setSchemes(data.schemes ?? []))
+      .catch(() => setSchemes([]));
+  }, [language]);
 
   async function submitQuestion(event?: FormEvent, preset?: string) {
     event?.preventDefault();
@@ -276,6 +293,18 @@ function App() {
               {serviceError && <p className="api-note">{language === "en" ? "The API is unavailable. Answers are not being sent to an AI service." : "API கிடைக்கவில்லை. பதில்கள் AI சேவைக்கு அனுப்பப்படவில்லை."}</p>}
             </section>
           )}
+          {!turns.length && <section className="scheme-explorer">
+            <div className="explorer-heading"><div><div className="section-kicker">{language === "en" ? "OFFICIAL DIRECTORY LEADS" : "அதிகாரப்பூர்வத் திட்டக் கோப்பகங்கள்"}</div><h2>{t.explore}</h2><p>{t.exploreIntro}</p></div><span className="explorer-count">{schemes.length.toString().padStart(2, "0")} <small>{language === "en" ? "PROGRAMS" : "திட்டங்கள்"}</small></span></div>
+            <div className="scheme-cards">
+              {schemes.map((scheme) => <article className="scheme-card" key={scheme.id}>
+                <div className="scheme-card-top"><span className="scheme-icon">✳</span><span className="scheme-category">{scheme.category}</span></div>
+                <h3>{scheme.title}</h3>
+                <p className="scheme-department">{scheme.department}</p>
+                <p className="scheme-overview">{scheme.overview}</p>
+                <div className="scheme-card-footer"><span className="unverified-label"><i />{t.unverified}</span><a href={scheme.url} target="_blank" rel="noreferrer">{t.openDirectory} <span>↗</span></a></div>
+              </article>)}
+            </div>
+          </section>}
         </section>
 
         <footer className="page-footer"><div className="footer-brand"><BrandMark /><span>CivicLens</span></div><p>{t.disclaimer}</p><a href="https://www.myscheme.gov.in/" target="_blank" rel="noreferrer">{language === "en" ? "Visit myScheme" : "myScheme-ஐப் பார்க்கவும்"} ↗</a></footer>

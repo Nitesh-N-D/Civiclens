@@ -1,6 +1,9 @@
 """Small public-source discovery corpus. Entries are not approved eligibility rules."""
 
 from dataclasses import dataclass
+from typing import Any
+
+from .models import SchemeCard
 
 
 @dataclass(frozen=True)
@@ -112,6 +115,31 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
 )
 
+SCHEMES: dict[str, dict[str, Any]] = {
+    "pudhumai-penn": {
+        "title_en": "Pudhumai Penn",
+        "title_ta": "புதுமைப் பெண்",
+        "department_en": "Social Welfare and Women Empowerment Department, Tamil Nadu",
+        "department_ta": "சமூகநலம் மற்றும் மகளிர் உரிமைத்துறை, தமிழ்நாடு",
+        "category_en": "Higher education",
+        "category_ta": "உயர்கல்வி",
+        "overview_en": "An education-support scheme listed by myScheme. Current eligibility and application status have not been verified against the latest department rules.",
+        "overview_ta": "myScheme-இல் பட்டியலிடப்பட்டுள்ள கல்வி உதவித் திட்டம். தற்போதைய தகுதியும் விண்ணப்ப நிலையும் சமீபத்திய துறை விதிகளுடன் ஒப்பிட்டு உறுதிப்படுத்தப்படவில்லை.",
+        "source_id": "myscheme-pudhumai-penn",
+    },
+    "free-education-tn": {
+        "title_en": "Free Education Scheme",
+        "title_ta": "இலவசக் கல்வித் திட்டம்",
+        "department_en": "Backward Classes, Most Backward Classes and Minorities Welfare Department, Tamil Nadu",
+        "department_ta": "பிற்படுத்தப்பட்டோர், மிகவும் பிற்படுத்தப்பட்டோர் மற்றும் சிறுபான்மையினர் நலத்துறை, தமிழ்நாடு",
+        "category_en": "Higher education",
+        "category_ta": "உயர்கல்வி",
+        "overview_en": "A Tamil Nadu higher-education fee-support scheme listed by myScheme. Current criteria and application steps have not been verified against current department orders.",
+        "overview_ta": "myScheme-இல் பட்டியலிடப்பட்டுள்ள தமிழ்நாட்டின் உயர்கல்விக் கட்டண உதவித் திட்டம். தற்போதைய தகுதி மற்றும் விண்ணப்ப வழிமுறைகள் சமீபத்திய அரசாணைகளுடன் உறுதிப்படுத்தப்படவில்லை.",
+        "source_id": "myscheme-free-education-tn",
+    },
+}
+
 
 def public_source(chunk: SourceChunk) -> dict[str, str | None]:
     return {
@@ -124,3 +152,25 @@ def public_source(chunk: SourceChunk) -> dict[str, str | None]:
         "desk_checked_at": chunk.desk_checked_at,
         "human_verified_at": chunk.human_verified_at,
     }
+
+
+def public_schemes(language: str = "en") -> list[SchemeCard]:
+    source_ids = {source.id for source in SOURCES}
+    cards = []
+    for scheme_id, record in SCHEMES.items():
+        if record["source_id"] not in source_ids:
+            continue
+        is_tamil = language == "ta"
+        source = next(source for source in SOURCES if source.id == record["source_id"])
+        cards.append(SchemeCard(
+            id=scheme_id,
+            title=record["title_ta"] if is_tamil else record["title_en"],
+            department=record["department_ta"] if is_tamil else record["department_en"],
+            category=record["category_ta"] if is_tamil else record["category_en"],
+            overview=record["overview_ta"] if is_tamil else record["overview_en"],
+            url=source.url,
+            source_id=source.id,
+            status=("தகுதி விதிகள் சரிபார்க்கப்படவில்லை" if is_tamil else "Eligibility rules not verified"),
+            eligibility_enabled=False,
+        ))
+    return cards

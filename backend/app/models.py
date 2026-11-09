@@ -29,6 +29,18 @@ class GeneratedAnswer(BaseModel):
     unable_to_answer: bool = False
 
 
+class SchemeCard(BaseModel):
+    id: str
+    title: str
+    department: str
+    category: str
+    overview: str
+    url: str
+    source_id: str
+    status: str
+    eligibility_enabled: bool = False
+
+
 class AskResponse(BaseModel):
     text: str
     citations: list[Citation]

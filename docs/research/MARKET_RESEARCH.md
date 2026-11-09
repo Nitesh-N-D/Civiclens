@@ -90,6 +90,10 @@ The proposed initial scope fits ordinary source editing and lightweight developm
 **Phase 2 (completed as a bounded desk audit):** a preliminary source audit and pilot corpus recommendation are in [Phase 2 source audit](PHASE2_SOURCE_AUDIT.md). Terms/reuse permissions, controlling current orders, and live application status remain unverified; no automated ingestion or eligibility publishing is authorized by this research.
 **Phase 3 (baseline complete):** initial user requirements and architecture are in [Product requirements](PRODUCT_REQUIREMENTS.md) and [Architecture blueprint](ARCHITECTURE_BLUEPRINT.md). The initial implementation may proceed as a clearly labeled demonstration using only reviewed, non-sensitive sample content. Current source rules must be human-verified before represented as live authoritative guidance. Paid resources and public deployment remain subject to the project safety policy.
 
+### Implementation progress update — 9 November 2026
+
+The repository now has a bilingual Tamil-default web client, a local FastAPI source/ask/catalog API, four discovery-only source summaries, two scheme catalog entries, Gemini key configuration and optional hybrid retrieval, citation allowlisting, privacy filtering, and an offline lexical retrieval check. Eligibility matching is deliberately disabled for both catalog entries because current controlling orders and route status have not been verified. Document checklists, scheme comparison, source monitoring, admin review UI, production database, and public hosting remain outstanding. See the root README and changelog for the current build state.
+
 ## Research documents
 
 - [Problem validation](PROBLEM_VALIDATION.md)

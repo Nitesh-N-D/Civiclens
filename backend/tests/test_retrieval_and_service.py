@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from app.gemini import GeminiProvider, ProviderFailure
+from app.corpus import public_schemes
 from app.retrieval import lexical_scores, retrieve
 from app.service import RequestBudget, answer_question, contains_sensitive_details
 
@@ -34,6 +35,15 @@ class FakeProvider:
 
 
 class RetrievalTests(unittest.TestCase):
+    def test_scheme_catalog_is_bilingual_and_never_claims_verified_eligibility(self):
+        english = public_schemes("en")
+        tamil = public_schemes("ta")
+        self.assertEqual(len(english), 2)
+        self.assertEqual(len(tamil), 2)
+        self.assertEqual(english[0].id, tamil[0].id)
+        self.assertTrue(all(not item.eligibility_enabled for item in english + tamil))
+        self.assertTrue(all("not verified" in item.status.lower() for item in english))
+
     def test_lexical_retrieval_ranks_relevant_public_record(self):
         scores = lexical_scores("Pudhumai Penn college student")
         self.assertEqual(len(scores), 4)

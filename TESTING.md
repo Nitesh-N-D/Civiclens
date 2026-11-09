@@ -22,6 +22,7 @@ With Uvicorn running on loopback, confirm:
 
 - `GET /api/health` returns `status: ok` and no secrets.
 - `GET /api/sources` returns the curated public source list.
+- `GET /api/schemes?language=ta` returns Tamil catalog cards with eligibility disabled and marked unverified.
 - `POST /api/ask` with a general Pudhumai Penn question returns source-search mode without keys.
 - An identifier-like question returns the privacy message without citations and without a provider call.
 - A wrong/absent key returns a safe fallback, not a stack trace or key value.

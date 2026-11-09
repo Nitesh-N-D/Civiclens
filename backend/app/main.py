@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .corpus import SOURCES, public_source
+from .corpus import SOURCES, public_schemes, public_source
 from .gemini import GeminiProvider
 from .models import AskRequest, AskResponse
 from .service import RequestBudget, answer_question
@@ -28,6 +28,12 @@ def health() -> dict[str, object]:
 @app.get("/api/sources")
 def sources() -> dict[str, list[dict[str, str | None]]]:
     return {"sources": [public_source(source) for source in SOURCES]}
+
+
+@app.get("/api/schemes")
+def schemes(language: str = "en"):
+    selected_language = "ta" if language == "ta" else "en"
+    return {"schemes": [scheme.model_dump() for scheme in public_schemes(selected_language)]}
 
 
 @app.post("/api/ask", response_model=AskResponse)

@@ -7,6 +7,7 @@ CivicLens is an independent, Tamil Nadu-first public information prototype. It h
 - Phase 0–3 research, source audit, requirements, and architecture baseline are in [`docs/research`](docs/research/).
 - Phase 4 interface includes Tamil/English language switching and a responsive, accessible layout.
 - Phase 5 API provides lexical retrieval, optional Gemini vector retrieval, source-grounded structured Gemini responses, citation ID validation, privacy filtering, bounded retries, and a search-only fallback.
+- Phase 6 includes a bilingual catalog of two scheme directory leads. Both are explicitly marked unverified, and eligibility matching stays disabled.
 - The current four source records are **discovery summaries**. They are not cleared as current scheme rules; no authoritative eligibility answer should be inferred from them.
 - No production deployment, service account, billing, or government integration is configured.
 
