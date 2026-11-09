@@ -57,6 +57,8 @@ No vendor is selected for public hosting at this stage. Current free-tier plan t
 | `feedback` | id, source/scheme, category, created_at, rate-limit hash | No raw chat; free text omitted or tightly bounded and warned. |
 | `review_event` | entity, actor, action, timestamp, rationale | Append-only change/audit trail. |
 
+The corresponding not-yet-applied PostgreSQL schema is in [`backend/migrations/0001_initial_schema.sql`](../../backend/migrations/0001_initial_schema.sql). The running prototype still uses the static Python corpus; no migration runner or database connection exists.
+
 ## Security and privacy boundaries
 
 - Keep API keys in approved server environment; redact them from errors and health payloads.

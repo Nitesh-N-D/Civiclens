@@ -9,6 +9,7 @@ CivicLens is an independent, Tamil Nadu-first public information prototype. It h
 - Phase 5 API provides lexical retrieval, optional Gemini vector retrieval, source-grounded structured Gemini responses, citation ID validation, privacy filtering, bounded retries, and a search-only fallback.
 - Phase 6 includes a bilingual catalog of two scheme directory leads. Both are explicitly marked unverified, and eligibility matching stays disabled.
 - The current four source records are **discovery summaries**. They are not cleared as current scheme rules; no authoritative eligibility answer should be inferred from them.
+- A proposed PostgreSQL schema is in [`backend/migrations`](backend/migrations/); the running prototype does not yet connect to a database.
 - No production deployment, service account, billing, or government integration is configured.
 
 ## Requirements
@@ -57,7 +58,7 @@ cd ..\backend
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TESTING.md), [`SECURITY.md`](SECURITY.md), and [`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md).
+More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TESTING.md), [`SECURITY.md`](SECURITY.md), [`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md), [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md), and [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md).
 
 ## Known limitations
 
