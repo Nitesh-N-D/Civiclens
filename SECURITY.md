@@ -9,6 +9,7 @@
 - Gemini output is schema-validated and citations are restricted to source IDs actually retrieved. Uncited or invalid output falls back to a non-generative response.
 - Retrieved source text is treated as untrusted data and cannot override the system instructions.
 - CORS allows only the configured local origins by default; local servers bind to loopback.
+- The optional maintainer overview is disabled without `CIVICLENS_ADMIN_TOKEN`, read-only, and compares a bearer token without returning it. The client keeps the entered token in memory only.
 - No production credentials, real citizen data, or deployment are configured.
 
 ## Important limits
@@ -16,7 +17,7 @@
 - The personal-information filter uses patterns and is not comprehensive. Do not enter personal or sensitive details. On Gemini's unpaid services, user content may be used to improve products and could be reviewed by humans; the backend must never be presented as safe for private case details.
 - Citation membership does not prove a generated sentence is entailed by a cited passage. Human review and an evaluation set are required before public eligibility answers.
 - The quota cap is in-memory and resets on process restart; it is not sufficient protection for a public multi-instance deployment.
-- No authentication or maintainer admin interface exists. Do not expose the development server publicly.
+- No production user authentication or edit-capable admin interface exists. The optional overview uses one shared local token and is unsuitable for a public service. Do not expose the development server publicly.
 - Government source URLs, access terms, and current rules have not all been verified.
 
 ## Before a public pilot

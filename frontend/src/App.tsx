@@ -6,6 +6,7 @@ type Citation = { id: string; title: string; url: string; owner: string; locator
 type Answer = { text: string; citations: Citation[]; mode: "ai" | "search"; warning?: string };
 type Turn = { question: string; answer: Answer };
 type SchemeCard = { id: string; title: string; department: string; category: string; overview: string; url: string; source_id: string; status: string; eligibility_enabled: boolean };
+type AdminOverview = { sources: Citation[]; source_count: number; human_verified_count: number; review_pending_count: number; provider: { configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null }; monitoring: string; mutations_enabled: boolean };
 
 const copy = {
   en: {
@@ -27,6 +28,16 @@ const copy = {
     exploreIntro: "Browse programs listed in official scheme directories.",
     unverified: "Rules not verified",
     openDirectory: "Open official directory",
+    maintainer: "Maintainer overview",
+    adminToken: "Maintainer token",
+    loadOverview: "Open overview",
+    closeOverview: "Close",
+    pendingReview: "Need human review",
+    verified: "Human verified",
+    monitoringOff: "Automatic source monitoring is not configured.",
+    readOnly: "Read-only view · no content changes are made here.",
+    adminError: "Could not open the overview. Check the token and try again.",
+    clearToken: "Clear token",
     sourceEmpty: "Source library is loading…",
     askAgain: "Ask another question",
     evidence: "Evidence & links",
@@ -60,6 +71,16 @@ const copy = {
     exploreIntro: "அதிகாரப்பூர்வத் திட்டக் கோப்பகங்களில் உள்ள திட்டங்களைப் பாருங்கள்.",
     unverified: "விதிகள் சரிபார்க்கப்படவில்லை",
     openDirectory: "அதிகாரப்பூர்வக் கோப்பகத்தைத் திறக்கவும்",
+    maintainer: "பராமரிப்பாளர் நிலை",
+    adminToken: "பராமரிப்பாளர் குறியீடு",
+    loadOverview: "நிலையைத் திறக்கவும்",
+    closeOverview: "மூடவும்",
+    pendingReview: "மனிதர் ஆய்வு தேவை",
+    verified: "மனிதர் சரிபார்த்தது",
+    monitoringOff: "தானியங்கி ஆதாரக் கண்காணிப்பு அமைக்கப்படவில்லை.",
+    readOnly: "பார்வைக்கு மட்டும் · இங்கே உள்ளடக்கம் மாற்றப்படாது.",
+    adminError: "நிலையைத் திறக்க முடியவில்லை. குறியீட்டைச் சரிபார்த்து மீண்டும் முயலுங்கள்.",
+    clearToken: "குறியீட்டை நீக்கவும்",
     sourceEmpty: "ஆதாரத் தொகுப்பு ஏற்றப்படுகிறது…",
     askAgain: "மற்றொரு கேள்வி கேளுங்கள்",
     evidence: "ஆதாரங்கள் மற்றும் இணைப்புகள்",
@@ -102,6 +123,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<Citation[]>([]);
   const [schemes, setSchemes] = useState<SchemeCard[]>([]);
+  const [adminEnabled, setAdminEnabled] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [adminToken, setAdminToken] = useState("");
+  const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
+  const [adminError, setAdminError] = useState(false);
   const [serviceError, setServiceError] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const t = copy[language];
@@ -113,6 +139,34 @@ function App() {
       ? "CivicLens — அரசுச் சேவைகள், எளிய வழியில்"
       : "CivicLens — Public services, made clearer";
   }, [language]);
+
+  useEffect(() => {
+    fetch("/api/health")
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: { admin_enabled?: boolean }) => setAdminEnabled(data.admin_enabled === true))
+      .catch(() => setAdminEnabled(false));
+  }, []);
+
+  async function loadAdminOverview(event: FormEvent) {
+    event.preventDefault();
+    setAdminError(false);
+    try {
+      const response = await fetch("/api/admin/overview", {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      if (!response.ok) throw new Error("not authorized");
+      setAdminOverview(await response.json() as AdminOverview);
+    } catch {
+      setAdminOverview(null);
+      setAdminError(true);
+    }
+  }
+
+  function clearAdminSession() {
+    setAdminToken("");
+    setAdminOverview(null);
+    setAdminError(false);
+  }
 
   useEffect(() => {
     fetch("/api/sources")
@@ -308,6 +362,23 @@ function App() {
         </section>
 
         <footer className="page-footer"><div className="footer-brand"><BrandMark /><span>CivicLens</span></div><p>{t.disclaimer}</p><a href="https://www.myscheme.gov.in/" target="_blank" rel="noreferrer">{language === "en" ? "Visit myScheme" : "myScheme-ஐப் பார்க்கவும்"} ↗</a></footer>
+        {adminEnabled && <section className="admin-entry">
+          <button className="admin-toggle" onClick={() => setShowAdmin((shown) => !shown)} aria-expanded={showAdmin}>{t.maintainer} <span>{showAdmin ? "−" : "+"}</span></button>
+          {showAdmin && <div className="admin-panel">
+            <div className="admin-panel-heading"><div><div className="section-kicker">CIVICLENS · INTERNAL</div><h2>{t.maintainer}</h2><p>{t.readOnly}</p></div><button className="text-button" onClick={() => { setShowAdmin(false); clearAdminSession(); }}>{t.closeOverview}</button></div>
+            {!adminOverview && <form className="admin-auth" onSubmit={loadAdminOverview}>
+              <label htmlFor="maintainer-token">{t.adminToken}</label>
+              <div><input id="maintainer-token" type="password" autoComplete="off" value={adminToken} onChange={(event) => setAdminToken(event.target.value)} /><button type="submit" disabled={!adminToken.trim()}>{t.loadOverview}</button></div>
+              {adminError && <p role="alert">{t.adminError}</p>}
+            </form>}
+            {adminOverview && <>
+              <div className="admin-kpis"><div><b>{adminOverview.source_count}</b><small>{t.sources}</small></div><div><b>{adminOverview.human_verified_count}</b><small>{t.verified}</small></div><div><b>{adminOverview.review_pending_count}</b><small>{t.pendingReview}</small></div><div><b>{adminOverview.provider.configured ? `${adminOverview.provider.configured_keys} key(s)` : "Off"}</b><small>Gemini</small></div></div>
+              <p className="admin-monitoring">{t.monitoringOff} {language === "en" ? "Provider status" : "சேவை நிலை"}: {adminOverview.provider.last_failure_category || (adminOverview.provider.last_request_succeeded === false ? "unavailable" : "no recent request")}</p>
+              <div className="admin-source-list">{adminOverview.sources.map((source) => <div className="admin-source-row" key={source.id}><span><b>{source.title}</b><small>{source.owner} · {source.desk_checked_at ? `Desk review ${source.desk_checked_at}` : "No review date"}</small></span><em>{source.human_verified_at || t.pendingReview}</em></div>)}</div>
+              <button className="text-button admin-clear" onClick={clearAdminSession}>{t.clearToken}</button>
+            </>}
+          </div>}
+        </section>}
       </main>
     </div>
   );

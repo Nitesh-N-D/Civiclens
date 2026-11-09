@@ -1,7 +1,7 @@
 # CivicLens pilot test plan
 
-**Status:** Draft plan only; no participants recruited  
-**Geography:** Tamil Nadu  
+**Status:** Draft plan only; no participants recruited
+**Geography:** Tamil Nadu
 **Pilot language:** Tamil first, English comparison
 
 ## Readiness gates

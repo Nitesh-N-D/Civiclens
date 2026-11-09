@@ -15,6 +15,7 @@ def _split_list(value: str) -> tuple[str, ...]:
 class Settings:
     gemini_key_1: str = os.getenv("GEMINI_API_KEY_1", "").strip()
     gemini_key_2: str = os.getenv("GEMINI_API_KEY_2", "").strip()
+    admin_token: str = os.getenv("CIVICLENS_ADMIN_TOKEN", "").strip()
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
     embedding_model: str = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001").strip()
     enable_embeddings: bool = os.getenv("GEMINI_ENABLE_EMBEDDINGS", "false").lower() == "true"

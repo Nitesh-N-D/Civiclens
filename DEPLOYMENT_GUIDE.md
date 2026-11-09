@@ -1,6 +1,6 @@
 # Deployment guide — preparation only
 
-**Status:** No deployment has been selected or performed.  
+**Status:** No deployment has been selected or performed.
 **Current runtime:** Vite client + FastAPI API + static in-process discovery corpus.
 
 ## Deployment shape
@@ -31,4 +31,3 @@ Do not create accounts, enable billing, provision resources, publish a URL, or c
 4. Deploy to a non-public staging environment with synthetic questions and no citizen data.
 5. Verify links, citations, provider-unavailable behavior, quotas, backups, and incident response.
 6. Obtain explicit public-release approval before publishing.
-

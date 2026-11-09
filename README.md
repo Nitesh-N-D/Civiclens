@@ -8,6 +8,7 @@ CivicLens is an independent, Tamil Nadu-first public information prototype. It h
 - Phase 4 interface includes Tamil/English language switching and a responsive, accessible layout.
 - Phase 5 API provides lexical retrieval, optional Gemini vector retrieval, source-grounded structured Gemini responses, citation ID validation, privacy filtering, bounded retries, and a search-only fallback.
 - Phase 6 includes a bilingual catalog of two scheme directory leads. Both are explicitly marked unverified, and eligibility matching stays disabled.
+- The optional maintainer overview is disabled by default and read-only; it displays review status but cannot edit content.
 - The current four source records are **discovery summaries**. They are not cleared as current scheme rules; no authoritative eligibility answer should be inferred from them.
 - A proposed PostgreSQL schema is in [`backend/migrations`](backend/migrations/); the running prototype does not yet connect to a database.
 - No production deployment, service account, billing, or government integration is configured.
@@ -58,7 +59,7 @@ cd ..\backend
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TESTING.md), [`SECURITY.md`](SECURITY.md), [`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md), [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md), and [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md).
+More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TESTING.md), [`SECURITY.md`](SECURITY.md), [`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md), [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md), [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md), and [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md).
 
 ## Known limitations
 
@@ -67,4 +68,4 @@ More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TEST
 - The source corpus is hand-authored and static; no ingestion or monitoring worker exists.
 - Gemini and embeddings require keys and consume provider quota. The local daily request budget is process-local, not a production distributed quota.
 - The sensitive-content filter is best-effort and cannot guarantee detection of every personal detail.
-- Eligibility checklists, comparison, admin review UI, source monitoring, and production hosting are not yet implemented.
+- Eligibility checklists, comparison, editable admin review, automated source monitoring, and production hosting are not yet implemented.

@@ -92,7 +92,7 @@ The proposed initial scope fits ordinary source editing and lightweight developm
 
 ### Implementation progress update — 9 November 2026
 
-The repository now has a bilingual Tamil-default web client, a local FastAPI source/ask/catalog API, four discovery-only source summaries, two scheme catalog entries, Gemini key configuration and optional hybrid retrieval, citation allowlisting, privacy filtering, and an offline lexical retrieval check. Eligibility matching is deliberately disabled for both catalog entries because current controlling orders and route status have not been verified. Document checklists, scheme comparison, source monitoring, admin review UI, production database, and public hosting remain outstanding. See the root README and changelog for the current build state.
+The repository now has a bilingual Tamil-default web client, a local FastAPI source/ask/catalog API, four discovery-only source summaries, two scheme catalog entries, Gemini key configuration and optional hybrid retrieval, citation allowlisting, privacy filtering, and an offline lexical retrieval check. Eligibility matching is deliberately disabled for both catalog entries because current controlling orders and route status have not been verified. Document checklists, scheme comparison, automated source monitoring, editable admin/content management, production database integration, and public hosting remain outstanding. See the root README and changelog for the current build state.
 
 ## Research documents
 

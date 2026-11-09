@@ -14,8 +14,11 @@ Copy `backend/.env.example` to `backend/.env`. The application reads only that p
 | `GEMINI_REQUESTS_PER_MINUTE` | Local process request cap for generation | `10` |
 | `GEMINI_DAILY_REQUEST_LIMIT` | Local process generation cap per UTC day | `100` |
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed to call the API | Local Vite origins |
+| `CIVICLENS_ADMIN_TOKEN` | Optional shared token for the local read-only maintainer overview | Empty; admin overview disabled |
 
 Gemini usage limits apply at project/model level and change over time. Two keys do not double the project quota. The local cap resets with the process and is only a development safeguard. Do not use free-tier Gemini with personal, sensitive, confidential, or private user information.
+
+Do not enable the shared maintainer token on a public deployment; see [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md).
 
 ## Frontend settings
 

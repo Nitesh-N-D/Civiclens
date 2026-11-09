@@ -162,9 +162,38 @@ h1 span{display:block}
 .loading-lines i:nth-child(2){width:88%}.loading-lines i:nth-child(3){width:62%}
 @keyframes shimmer{to{background-position:-200% 0}}
 .api-note{font-size:9px;color:#9b8560}
+.admin-entry{max-width:790px;margin:0 auto 20px;text-align:right}
+.admin-toggle{border:0;background:transparent;color:#9aa7a1;font-size:9px;padding:8px 2px}
+.admin-toggle:hover{color:#4e806e}
+.admin-toggle span{font-size:14px;margin-left:5px}
+.admin-panel{margin-top:7px;text-align:left;background:#fff;border:1px solid #e2ebe5;border-radius:12px;padding:18px;box-shadow:0 10px 28px #1b4d3510}
+.admin-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.admin-panel-heading h2{font:700 18px "Segoe UI","Nirmala UI",sans-serif;color:#31554a;margin:7px 0 4px}
+.admin-panel-heading p{font-size:9px;color:#83948c;margin:0}
+.admin-auth{max-width:430px;margin-top:18px}
+.admin-auth label{display:block;font-size:10px;color:#607970;margin-bottom:7px}
+.admin-auth>div{display:flex;gap:8px}
+.admin-auth input{min-width:0;flex:1;border:1px solid #dfe8e2;border-radius:7px;padding:9px 10px;font-size:11px;color:#34534a}
+.admin-auth button{border:0;border-radius:7px;padding:8px 12px;background:#08795e;color:#fff;font-size:10px}
+.admin-auth button:disabled{opacity:.45;cursor:not-allowed}
+.admin-auth p{color:#ad6b59;font-size:9px}
+.admin-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:17px 0 12px}
+.admin-kpis>div{border:1px solid #edf1ee;background:#fafcfb;border-radius:8px;padding:10px}
+.admin-kpis b,.admin-kpis small{display:block}
+.admin-kpis b{font-size:17px;color:#3d725d}
+.admin-kpis small{font-size:8px;color:#83958d;margin-top:4px}
+.admin-monitoring{font-size:9px;color:#8a795b;background:#fbf7ef;border-radius:7px;padding:9px 10px;line-height:1.5}
+.admin-source-list{border-top:1px solid #edf1ee}
+.admin-source-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 1px;border-bottom:1px solid #edf1ee}
+.admin-source-row b,.admin-source-row small{display:block}
+.admin-source-row b{font-size:9px;color:#516e63}
+.admin-source-row small{font-size:8px;color:#9aa69f;margin-top:4px}
+.admin-source-row em{font-style:normal;color:#9b8051;background:#fbf5e9;border-radius:99px;padding:5px 7px;font-size:8px;white-space:nowrap}
+.admin-clear{margin-top:9px}
 button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid #91c8ae;outline-offset:3px}
 @media(max-width:1000px){.app-shell{padding:0 36px}.hero-side{right:-40px;transform:scale(.88);transform-origin:center right}.hero-content{width:68%}.discovery-grid{gap:32px}.sources-panel{padding-left:25px}}
 @media(max-width:760px){.app-shell{padding:0 22px}.topbar{height:70px}.pilot-pill{font-size:0;padding:8px}.pilot-pill .pilot-dot{margin:0}.topbar-right{gap:11px}.hero{min-height:0;padding:51px 0 34px}.hero-content{width:100%}.hero-side{opacity:.16;right:-108px;top:9px;transform:scale(.8);pointer-events:none}.orb-one{right:-70px}.hero h1{font-size:clamp(38px,9vw,53px);letter-spacing:-2px}.hero-intro{font-size:13px;max-width:420px}.ask-box{padding:11px}.ask-bottomline{padding-left:37px}.privacy-note{font-size:9px}.trust-strip{align-items:flex-start;flex-wrap:wrap;padding:15px 2px;gap:13px}.trust-divider{display:none}.trust-item{width:calc(50% - 8px)}.not-government{width:100%;padding-top:3px}.discovery-grid{grid-template-columns:1fr;gap:31px}.sources-panel{border-left:0;border-top:1px solid #e8eeea;padding:22px 0 0}.workspace{padding-top:30px}.hero-compact{padding:34px 0 20px}.hero-compact h1{font-size:38px}.hero-compact .hero-side{display:none}.page-footer{flex-wrap:wrap;gap:8px;padding:14px 0}.page-footer p{order:3;flex:0 0 100%}.conversation-header{align-items:flex-start;flex-direction:column;gap:9px}.conversation-header h2{font-size:18px}.text-button{align-self:flex-end}.answer-card{padding:16px}.citation-status{display:none}}
 @media(max-width:760px){.scheme-cards{grid-template-columns:1fr}.scheme-explorer{margin-top:31px}.scheme-overview{min-height:0}}
+@media(max-width:520px){.admin-panel{padding:14px}.admin-kpis{grid-template-columns:repeat(2,1fr)}.admin-source-row{align-items:flex-start;flex-direction:column;gap:7px}}
 @media(max-width:420px){.app-shell{padding:0 16px}.brand-name{font-size:19px}.pilot-pill{display:none}.hero h1{font-size:37px}.ask-topline textarea{font-size:12px}.submit-button{padding:9px 10px;font-size:10px}.trust-item b{font-size:9px}.trust-item small{font-size:8px}.suggestions-panel h2,.sources-panel h2{font-size:18px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

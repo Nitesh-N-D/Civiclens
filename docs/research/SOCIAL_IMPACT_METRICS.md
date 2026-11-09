@@ -1,6 +1,6 @@
 # Social-impact measurement plan
 
-**Status:** Proposed measures; no baseline or impact result exists  
+**Status:** Proposed measures; no baseline or impact result exists
 **Geography:** Tamil Nadu initial pilot
 
 Measure whether the product helps people reach and understand authoritative information. Site visits, AI usage, or number of schemes indexed are not by themselves evidence of public benefit.

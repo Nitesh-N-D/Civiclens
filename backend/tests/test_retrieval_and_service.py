@@ -4,6 +4,7 @@ from unittest.mock import patch
 from app.gemini import GeminiProvider, ProviderFailure
 from app.corpus import public_schemes
 from app.retrieval import lexical_scores, retrieve
+from app.security import valid_bearer_token
 from app.service import RequestBudget, answer_question, contains_sensitive_details
 
 
@@ -35,6 +36,14 @@ class FakeProvider:
 
 
 class RetrievalTests(unittest.TestCase):
+    def test_admin_bearer_token_requires_exact_secret_without_leaking_it(self):
+        secret = "local-admin-token-do-not-log"
+        self.assertTrue(valid_bearer_token(secret, f"Bearer {secret}"))
+        self.assertTrue(valid_bearer_token(secret, f"bearer {secret}"))
+        self.assertFalse(valid_bearer_token(secret, "Bearer wrong"))
+        self.assertFalse(valid_bearer_token(secret, None))
+        self.assertFalse(valid_bearer_token("", f"Bearer {secret}"))
+
     def test_scheme_catalog_is_bilingual_and_never_claims_verified_eligibility(self):
         english = public_schemes("en")
         tamil = public_schemes("ta")
