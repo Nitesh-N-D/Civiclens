@@ -15,6 +15,8 @@ class Citation(BaseModel):
     owner: str
     locator: str | None = None
     status: str
+    desk_checked_at: str | None = None
+    human_verified_at: str | None = None
 
 
 class AnswerClaim(BaseModel):

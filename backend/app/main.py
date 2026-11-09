@@ -26,7 +26,7 @@ def health() -> dict[str, object]:
 
 
 @app.get("/api/sources")
-def sources() -> dict[str, list[dict[str, str]]]:
+def sources() -> dict[str, list[dict[str, str | None]]]:
     return {"sources": [public_source(source) for source in SOURCES]}
 
 

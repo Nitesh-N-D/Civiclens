@@ -1,8 +1,8 @@
 # CivicLens retrieval evaluation — initial offline baseline
 
-**Date:** 9 November 2026  
-**Run:** `python evaluation/evaluate_retrieval.py` from `backend/`  
-**Corpus:** Four hand-authored public-source discovery summaries  
+**Date:** 9 November 2026
+**Run:** `python evaluation/evaluate_retrieval.py` from `backend/`
+**Corpus:** Four hand-authored public-source discovery summaries
 **Model/API calls:** None
 
 ## Results

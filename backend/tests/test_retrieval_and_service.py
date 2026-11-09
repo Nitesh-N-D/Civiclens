@@ -98,6 +98,7 @@ class RetrievalTests(unittest.TestCase):
         self.assertEqual(response.mode, "search")
         self.assertTrue(response.citations)
         self.assertTrue(response.text.startswith("பாதுகாப்பாக"))
+        self.assertIn("தமிழ் நிபுணர்", response.warning)
 
     def test_gemini_key_health_never_returns_credentials(self):
         provider = GeminiProvider()

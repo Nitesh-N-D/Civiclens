@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
 type Language = "en" | "ta";
-type Citation = { id: string; title: string; url: string; owner: string; locator?: string; status: string };
+type Citation = { id: string; title: string; url: string; owner: string; locator?: string; status: string; desk_checked_at?: string; human_verified_at?: string | null };
 type Answer = { text: string; citations: Citation[]; mode: "ai" | "search"; warning?: string };
 type Turn = { question: string; answer: Answer };
 
@@ -27,8 +27,9 @@ const copy = {
     evidence: "Evidence & links",
     answerLabel: "CIVICLENS EXPLAINED",
     loading: "Looking through the available official information…",
-    privacy: "Please don’t enter Aadhaar numbers, bank details, or private documents. This pilot is for general questions and does not determine official eligibility.",
-    disclaimer: "Information aid only. Scheme rules can change; confirm details with the responsible department before applying.",
+    privacy: "Don’t enter personal identifiers, sensitive details, or private documents. If Gemini is enabled, your general question is sent to Google; unpaid-tier content may be used to improve products. CivicLens does not store chats.",
+    providerTerms: "Gemini data terms",
+    disclaimer: "Information aid only. Scheme rules can change; confirm details with the responsible department before applying. Tamil wording has not had specialist review.",
     sourceStatus: "Directory source",
     searchMode: "Source search",
     aiMode: "AI explanation",
@@ -55,8 +56,9 @@ const copy = {
     evidence: "ஆதாரங்கள் மற்றும் இணைப்புகள்",
     answerLabel: "CIVICLENS விளக்கம்",
     loading: "கிடைக்கும் அதிகாரப்பூர்வ தகவல்களைத் தேடுகிறோம்…",
-    privacy: "ஆதார் எண், வங்கித் தகவல் அல்லது தனிப்பட்ட ஆவணங்களை உள்ளிட வேண்டாம். இது பொதுவான கேள்விகளுக்கான முன்னோட்டம்; அதிகாரப்பூர்வத் தகுதியைத் தீர்மானிக்காது.",
-    disclaimer: "தகவல் உதவி மட்டுமே. திட்ட விதிகள் மாறலாம்; விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறையிடம் உறுதிப்படுத்தவும்.",
+    privacy: "தனிப்பட்ட அடையாளம், ரகசிய விவரம் அல்லது தனிப்பட்ட ஆவணங்களை உள்ளிட வேண்டாம். Gemini இயக்கப்பட்டால், பொதுவான கேள்வி Google-க்கு அனுப்பப்படும்; இலவச சேவை உள்ளீடுகள் தயாரிப்பு மேம்பாட்டிற்குப் பயன்படுத்தப்படலாம். CivicLens உரையாடல்களைச் சேமிக்காது.",
+    providerTerms: "Gemini தரவு விதிகள்",
+    disclaimer: "தகவல் உதவி மட்டுமே. திட்ட விதிகள் மாறலாம்; விண்ணப்பிக்கும் முன் துறையிடம் உறுதிப்படுத்தவும். தமிழ் விளக்கத்தை நிபுணர் சான்றாய்வு செய்யவில்லை.",
     sourceStatus: "திட்டத் தகவல் ஆதாரம்",
     searchMode: "ஆதாரத் தேடல்",
     aiMode: "AI விளக்கம்",
@@ -85,7 +87,7 @@ function BrandMark() {
 }
 
 function App() {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>("ta");
   const [question, setQuestion] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,6 +99,9 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language;
+    document.title = language === "ta"
+      ? "CivicLens — அரசுச் சேவைகள், எளிய வழியில்"
+      : "CivicLens — Public services, made clearer";
   }, [language]);
 
   useEffect(() => {
@@ -201,7 +206,7 @@ function App() {
                 </button>
               </div>
             </form>
-            <p className="privacy-note"><span className="lock-icon">⌑</span>{t.privacy}</p>
+            <p className="privacy-note"><span className="lock-icon">⌑</span><span>{t.privacy as string} <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noreferrer">{t.providerTerms as string} ↗</a></span></p>
           </div>
           <div className="hero-side" aria-hidden="true">
             <div className="orbit orbit-a" /><div className="orbit orbit-b" />
@@ -230,7 +235,7 @@ function App() {
                     <button className="suggestion" key={item.key} onClick={() => void submitQuestion(undefined, (t.prompts as string[])[item.key])}>
                       <span className={`suggestion-icon ${item.tone}`}>{item.icon}</span>
                       <span>{(t.prompts as string[])[item.key]}</span>
-                      <span className="suggestion-arrow">↗</span>
+                  <span className="suggestion-arrow">↗</span>
                     </button>
                   ))}
                 </div>
@@ -260,7 +265,7 @@ function App() {
                 {!loading && !!currentTurn.answer.citations.length && <div className="citations-block">
                   <div className="citation-title">{t.evidence}</div>
                   <div className="citation-list">{currentTurn.answer.citations.map((citation) => <a className="citation-card" href={citation.url} key={citation.id} target="_blank" rel="noreferrer">
-                    <span className="citation-number">↗</span><span className="citation-copy"><b>{citation.title}</b><small>{citation.owner}{citation.locator ? ` · ${citation.locator}` : ""}</small></span><span className="citation-status">{citation.status || t.sourceStatus}</span>
+                    <span className="citation-number">↗</span><span className="citation-copy"><b>{citation.title}</b><small>{citation.owner}{citation.locator ? ` · ${citation.locator}` : ""}{citation.desk_checked_at ? ` · ${language === "ta" ? "மேசை ஆய்வு" : "Desk review"} ${citation.desk_checked_at}` : ""}</small></span><span className="citation-status">{citation.human_verified_at ? (language === "ta" ? `மனிதர் சரிபார்த்தது ${citation.human_verified_at}` : `Human checked ${citation.human_verified_at}`) : (language === "ta" ? "அதிகாரப்பூர்வ ஆதாரம் · விதிகள் சரிபார்க்கப்படவில்லை" : citation.status || t.sourceStatus)}</span>
                   </a>)}</div>
                 </div>}
               </article>}

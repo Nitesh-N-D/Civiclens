@@ -25,8 +25,9 @@ SENSITIVE_PATTERNS = (
 )
 
 WARNING = (
-    "Directory information is for discovery only. Confirm current rules and application status with the responsible "
-    "department; CivicLens does not determine eligibility."
+    "Directory information is for discovery only. CivicLens Tamil wording has not been checked by a Tamil subject "
+    "specialist. Confirm current rules and application status with the responsible department; CivicLens does not "
+    "determine eligibility."
 )
 PRIVACY_RESPONSE = (
     "For privacy, please remove personal identifiers and private details, then ask a general question. "
@@ -37,8 +38,9 @@ NO_EVIDENCE = (
     "starting points; please confirm current rules with the responsible department."
 )
 TA_WARNING = (
-    "திட்டக் கோப்பகத் தகவல் வழிகாட்டுதலுக்காக மட்டுமே. தற்போதைய விதிகளையும் விண்ணப்ப நிலையையும் "
-    "சம்பந்தப்பட்ட துறையிடம் உறுதிப்படுத்தவும்; CivicLens தகுதியைத் தீர்மானிக்காது."
+    "திட்டக் கோப்பகத் தகவல் வழிகாட்டுதலுக்காக மட்டுமே. CivicLens தமிழ் விளக்கத்தை தமிழ் நிபுணர் "
+    "சான்றாய்வு செய்யவில்லை. தற்போதைய விதிகளையும் விண்ணப்ப நிலையையும் சம்பந்தப்பட்ட துறையிடம் "
+    "உறுதிப்படுத்தவும்; CivicLens தகுதியைத் தீர்மானிக்காது."
 )
 TA_PRIVACY_RESPONSE = (
     "தனியுரிமைக்காக, தனிப்பட்ட அடையாளங்களையும் விவரங்களையும் நீக்கி பொதுவான கேள்வியாகக் கேளுங்கள். "

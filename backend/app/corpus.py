@@ -13,6 +13,8 @@ class SourceChunk:
     status: str
     text_en: str
     text_ta: str
+    desk_checked_at: str = "2026-11-09"
+    human_verified_at: str | None = None
 
 
 SOURCES: tuple[SourceChunk, ...] = (
@@ -111,7 +113,7 @@ SOURCES: tuple[SourceChunk, ...] = (
 )
 
 
-def public_source(chunk: SourceChunk) -> dict[str, str]:
+def public_source(chunk: SourceChunk) -> dict[str, str | None]:
     return {
         "id": chunk.id,
         "title": chunk.title,
@@ -119,4 +121,6 @@ def public_source(chunk: SourceChunk) -> dict[str, str]:
         "owner": chunk.owner,
         "locator": chunk.locator,
         "status": chunk.status,
+        "desk_checked_at": chunk.desk_checked_at,
+        "human_verified_at": chunk.human_verified_at,
     }
