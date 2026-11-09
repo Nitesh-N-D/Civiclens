@@ -93,7 +93,7 @@ No generated text becomes source data. Changes to source content require a revie
 
 ## Quality measures
 
-Before pilot, maintain a reviewed bilingual evaluation set with expected answer, gold citations, and abstention label. Track answer correctness, citation precision/recall, unsupported-claim rate, eligibility rule accuracy, Tamil comprehension, abstention quality, official route success, latency, provider error rate, and source freshness. Establish thresholds with human reviewers and user tasks before public launch; no evaluation results exist yet.
+Before pilot, maintain a reviewed bilingual evaluation set with expected answer, gold citations, and abstention label. Track answer correctness, citation precision/recall, unsupported-claim rate, eligibility rule accuracy, Tamil comprehension, abstention quality, official route success, latency, provider error rate, and source freshness. An initial synthetic lexical retrieval baseline exists, but no generation-quality or citizen task evaluation results exist. Establish thresholds with human reviewers and user tasks before public launch.
 
 ## MVP release gates
 
