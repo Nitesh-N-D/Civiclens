@@ -1,6 +1,6 @@
 # Competitor and alternative analysis
 
-**Status:** Phase 0–1 desk review of official product descriptions  
+**Status:** Phase 0–1 desk review of official product descriptions
 **Research date:** 9 November 2026
 
 “Competitor” here includes public portals and offline/assisted alternatives that already solve parts of the task. Feature assessments below use official descriptions, not independent usability tests. No claim is made that CivicLens is unique.

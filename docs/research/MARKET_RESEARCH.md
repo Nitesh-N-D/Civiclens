@@ -1,7 +1,7 @@
 # CivicLens market and feasibility research
 
-**Status:** Phase 0–1 initial desk research  
-**Research date:** 9 November 2026  
+**Status:** Phase 0–3 research and baseline blueprint
+**Research date:** 9 November 2026
 **Scope:** Tamil Nadu, India
 
 ## Repository audit (Phase 0)
@@ -85,10 +85,10 @@ The proposed initial scope fits ordinary source editing and lightweight developm
 
 ## Recommended roadmap and gate
 
-**Phase 0 (completed):** workspace and instruction audit.  
-**Phase 1 (completed as desk research only):** problem/competitor scan, hypotheses, MVP direction, feasibility and risk notes. Direct citizen validation remains open.  
-**Next, after user approval:** Phase 2 source research: select a small scheme/service set; validate authoritative pages and documents, source access/reuse terms, update mechanisms, Tamil/English availability, and conflicts; establish registry and review workflow.  
-**Then:** Phase 3 requirements and data model; agree on acceptable pilot evaluation before application implementation. Do not treat these research documents as approval to implement, activate billing, or deploy.
+**Phase 0 (completed):** workspace and instruction audit.
+**Phase 1 (completed as desk research only):** problem/competitor scan, hypotheses, MVP direction, feasibility and risk notes. Direct citizen validation remains open.
+**Phase 2 (completed as a bounded desk audit):** a preliminary source audit and pilot corpus recommendation are in [Phase 2 source audit](PHASE2_SOURCE_AUDIT.md). Terms/reuse permissions, controlling current orders, and live application status remain unverified; no automated ingestion or eligibility publishing is authorized by this research.
+**Phase 3 (baseline complete):** initial user requirements and architecture are in [Product requirements](PRODUCT_REQUIREMENTS.md) and [Architecture blueprint](ARCHITECTURE_BLUEPRINT.md). The initial implementation may proceed as a clearly labeled demonstration using only reviewed, non-sensitive sample content. Current source rules must be human-verified before represented as live authoritative guidance. Paid resources and public deployment remain subject to the project safety policy.
 
 ## Research documents
 

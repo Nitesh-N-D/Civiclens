@@ -1,6 +1,6 @@
 # Product differentiation hypotheses
 
-**Status:** Unvalidated proposals from Phase 1 desk research  
+**Status:** Unvalidated proposals from Phase 1 desk research
 **Research date:** 9 November 2026
 
 myScheme and UMANG already provide scheme discovery and public-service aggregation. Differentiation must show useful improvements in citizen understanding and safe navigation, not simply add a chat box.

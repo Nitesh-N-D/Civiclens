@@ -1,6 +1,6 @@
 # MVP feature priorities
 
-**Status:** Phase 1 proposal; requires user and source validation  
+**Status:** Phase 1 proposal; requires user and source validation
 **Research date:** 9 November 2026
 
 Priorities use citizen value, trust risk, and feasibility as qualitative judgments. They are not measured scores.

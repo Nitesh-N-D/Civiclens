@@ -1,6 +1,6 @@
 # Initial user personas and journeys
 
-**Status:** Hypotheses for discovery, not research-derived personas  
+**Status:** Hypotheses for discovery, not research-derived personas
 **Research date:** 9 November 2026
 
 These provisional profiles guide interviews. They are not claims about every member of a demographic group. Validate or replace them with participant evidence before designing detailed workflows.

@@ -1,9 +1,11 @@
 # Preliminary official source inventory
 
-**Status:** Discovery shortlist, not ingestion authorization  
+**Status:** Discovery shortlist plus Phase 2 source audit; not ingestion authorization
 **Research date:** 9 November 2026
 
-This inventory is a set of official starting points surfaced in Phase 0–1. It is not a completed Phase 2 source audit. No sources were crawled or ingested. No public API availability, scraping permission, reuse license, or update cadence is assumed. Verify the terms, robots policy, copyright/reuse conditions, and actual content format for each specific endpoint before automated access.
+This inventory is a set of official starting points surfaced in Phase 0–1, with a bounded Phase 2 desk audit documented separately. No sources were crawled or ingested. No public API availability, scraping permission, reuse license, or update cadence is assumed. Verify the terms, robots policy, copyright/reuse conditions, and actual content format for each specific endpoint before automated access.
+
+The bounded desk audit is now recorded in [PHASE2_SOURCE_AUDIT.md](PHASE2_SOURCE_AUDIT.md). No source has been approved for automated collection or unreviewed eligibility answers.
 
 | ID | Source / owner | Jurisdiction and likely content | Public discovery URL | Access observations / next check |
 |---|---|---|---|---|

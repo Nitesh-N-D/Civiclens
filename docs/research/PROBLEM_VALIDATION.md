@@ -1,7 +1,7 @@
 # Problem validation: CivicLens
 
-**Status:** Phase 0–1 desk research, not field validation  
-**Research date:** 9 November 2026  
+**Status:** Phase 0–1 desk research, not field validation
+**Research date:** 9 November 2026
 **Geography:** Tamil Nadu first
 
 ## Executive finding
