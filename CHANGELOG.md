@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-10 — Phase 6: optional Supabase wiring
+
+- **Persistent budget:** with `DATABASE_URL` set, the shared daily Gemini count is stored in PostgreSQL (`api_usage_daily`, one atomic upsert per call) so it survives Render's idle restarts. Any database error falls back to the in-memory count and pauses database attempts for 60 s; answers never wait on or fail because of the database.
+- **Migrations (TD-17):** `scripts/migrate.py` applies `0001`–`0003` once each, each in its own transaction. `0003` enables RLS with no policies on every table, closing Supabase's public Data API.
+- **Health:** `/api/health` adds `database: not_configured | connected | unavailable`.
+- **Config:** `DATABASE_URL` in `backend/.env.example` (Supabase transaction pooler) and as a dashboard secret in `render.yaml`. No Supabase anon/service keys are used.
+- Tests: 41 unit tests (7 new, no real database needed).
+
 ## 2026-11-10 — Phase 5: deployment preparation (not deployed)
 
 - **Migration 0002 (TD-17):** pgvector `VECTOR(768)` column with HNSW index, English and Tamil (`simple`) full-text GIN indexes, `scheme_aliases` and `scheme_changes` tables. Additive; not applied anywhere.

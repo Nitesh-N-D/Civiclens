@@ -5,7 +5,7 @@
 
 Each item was reproduced or verified during the audit unless marked otherwise.
 
-## Status (updated 10 Nov 2026, Phase 5)
+## Status (updated 10 Nov 2026, Phase 6)
 
 | ID | Status |
 |---|---|
@@ -22,7 +22,7 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-11 | Partly: strings in `copy.ts`, types in `types.ts`, change and print components split out. `App.tsx` still holds most layout. |
 | TD-14 | **Fixed.** Corpus tokenised once at import. |
 | TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
-| TD-17 | Partly: `0002` adds pgvector `VECTOR(768)` + HNSW, EN/TA full-text indexes, aliases and change tables. Still no migration runner; the app does not read PostgreSQL yet. |
+| TD-17 | Mostly fixed (Phase 6): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS. Open: corpus still static, not loaded from PostgreSQL. |
 
 ## S1
 

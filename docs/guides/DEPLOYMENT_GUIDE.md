@@ -31,7 +31,7 @@ The repository now carries configuration for one candidate free-tier shape. The 
 |---|---|---|
 | API | Render free web service (sleeps when idle; first request after sleep is slow) | [`render.yaml`](../../render.yaml) — `autoDeploy: false`, health check `/api/health`, keys and `ALLOWED_ORIGINS` entered in the dashboard (`sync: false`) |
 | Frontend | Cloudflare Pages, build `npm run build`, root `frontend`, output `dist` | [`frontend/public/_headers`](../../frontend/public/_headers) — security headers and CSP; set the CSP `connect-src` to the exact API origin |
-| Database | Supabase free PostgreSQL with pgvector (optional; the app does not use it yet) | [`0001`](../../backend/migrations/0001_initial_schema.sql), [`0002`](../../backend/migrations/0002_search_and_change_tracking.sql) |
+| Database | Supabase free PostgreSQL (optional). Today it only stores one aggregate daily Gemini counter; answers never depend on it | [`0001`–`0003`](../../backend/migrations/README.md), [`scripts/migrate.py`](../../backend/scripts/migrate.py) |
 
 Steps once approved:
 
@@ -39,6 +39,16 @@ Steps once approved:
 2. Create the Pages project with environment variable `VITE_API_BASE=https://<service>.onrender.com` (public, not a secret). Narrow `connect-src` in `_headers` to that origin.
 3. Check `/api/health` reports `HEALTHY`, ask one English and one Tamil synthetic question, and confirm a 429 falls back to cited search mode.
 4. Leave `CIVICLENS_ADMIN_TOKEN` unset on the public service.
+
+### Optional: Supabase
+
+1. Create a free Supabase project (no billing). Note the database password; do not commit it.
+2. Copy the **Transaction pooler** connection string (Connect → port 6543, IPv4-compatible; Render free has no IPv6 egress for the direct host) and append `?sslmode=require`.
+3. Put it in `backend/.env` as `DATABASE_URL=` and run `python scripts/migrate.py` from `backend/` once (`--status` lists what is applied). Each file runs in one transaction and records itself, so re-running is safe.
+4. Enter the same URL as the `DATABASE_URL` secret on Render.
+5. `/api/health` should then report `"database": "connected"`. `unavailable` means the API keeps working on the in-memory budget.
+
+Only this server-side URL is used. The anon and `service_role` keys are not needed and should not be configured: the frontend never calls Supabase, and migration 0003 enables RLS with no policies on every table so the public Data API sees nothing. Free projects pause after about a week without activity and have no automatic backups (see [backup and recovery](BACKUP_AND_RECOVERY.md)); losing this database loses only a usage counter.
 
 ## Release sequence
 

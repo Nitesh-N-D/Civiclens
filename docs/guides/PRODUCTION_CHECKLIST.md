@@ -31,4 +31,4 @@
 - [ ] Test outage, quota exhaustion, stale/conflicting source, and rollback behavior.
 - [ ] Complete staging review and obtain explicit authorization before public deployment.
 
-**Current status:** Not production-ready. No source rules have human sign-off, no database is connected, no citizen testing has been conducted, and no production deployment exists.
+**Current status:** Not production-ready. No source rules have human sign-off, the optional database stores only a daily usage counter, no citizen testing has been conducted, and no production deployment exists.
