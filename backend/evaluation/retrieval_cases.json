@@ -14,5 +14,9 @@
   {"id":"off-weather","question":"what is the weather in Chennai","expected_source":null},
   {"id":"off-bus","question":"Tamil Nadu bus timings","expected_source":null},
   {"id":"off-cricket","question":"current government scheme for cricket","expected_source":null},
-  {"id":"off-passport","question":"how do I get a passport renewal","expected_source":null}
+  {"id":"off-passport","question":"how do I get a passport renewal","expected_source":null},
+  {"id":"en-alias-puthumai","question":"Puthumai Penn scheme","expected_source":"myscheme-pudhumai-penn"},
+  {"id":"en-alias-moovalur","question":"Moovalur Ramamirtham Ammaiyar higher education scheme","expected_source":"myscheme-pudhumai-penn"},
+  {"id":"en-pension-amount","question":"How much is the monthly old age pension?","expected_source":"cra-social-security-overview"},
+  {"id":"off-magalir-urimai","question":"Magalir Urimai Thogai","expected_source":null}
 ]

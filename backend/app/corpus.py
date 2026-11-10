@@ -16,7 +16,8 @@ class SourceChunk:
     status: str
     text_en: str
     text_ta: str
-    desk_checked_at: str = "2026-11-09"
+    # TD-04 freshness re-check against 2026 sources: 10 Nov 2026.
+    desk_checked_at: str = "2026-11-10"
     human_verified_at: str | None = None
     # Curated search aliases (EN + TA). Used for retrieval only; never shown as evidence.
     keywords: str = ""
@@ -25,7 +26,7 @@ class SourceChunk:
 SOURCES: tuple[SourceChunk, ...] = (
     SourceChunk(
         id="myscheme-pudhumai-penn",
-        keywords="scholarship assistance girl women female college degree diploma higher education government school உதவித்தொகை மாணவி பெண் கல்லூரி உயர்கல்வி பள்ளி",
+        keywords="puthumai pudhumaipenn moovalur ramamirtham ammaiyar penkalvi monthly 1000 scholarship assistance girl women female college degree diploma higher education government school உதவித்தொகை மாணவி பெண் கல்லூரி உயர்கல்வி பள்ளி புதுமை மூவலூர் இராமாமிர்தம் அம்மையார்",
         title="Moovalur Ramamirtham Ammaiyar Higher Education Assurance Scheme (Pudhumai Penn)",
         url="https://www.myscheme.gov.in/schemes/pudhumai-penn-scheme",
         owner="myScheme · Digital India Corporation, MeitY",
@@ -50,7 +51,7 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
     SourceChunk(
         id="myscheme-free-education-tn",
-        keywords="scholarship fee waiver tuition college degree undergraduate backward class BC MBC DNC denotified community உதவித்தொகை கட்டணம் கல்லூரி பிற்படுத்தப்பட்டோர் சீர்மரபினர்",
+        keywords="free education scheme FES special fee compulsory fee polytechnic scholarship fee waiver tuition college degree undergraduate backward class BC MBC DNC denotified community உதவித்தொகை கட்டணம் கல்லூரி பிற்படுத்தப்பட்டோர் சீர்மரபினர் இலவசக் கல்வி சிறப்புக் கட்டணம்",
         title="Free Education Scheme · Tamil Nadu",
         url="https://www.myscheme.gov.in/schemes/fes",
         owner="myScheme · Digital India Corporation, MeitY",
@@ -98,25 +99,29 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
     SourceChunk(
         id="cra-social-security-overview",
-        keywords="pension old age elderly senior citizen widow destitute disability disabled differently abled agricultural labourer ஓய்வூதியம் முதியோர் விதவை கைம்பெண் மாற்றுத்திறனாளி விவசாயத் தொழிலாளர்",
+        keywords="pension OAP IGNOAPS IGNWPS IGNDPS NSAP uzhavar pathukappu destitute deserted unmarried women 1200 1500 monthly amount pension old age elderly senior citizen widow destitute disability disabled differently abled agricultural labourer ஓய்வூதியம் முதியோர் விதவை கைம்பெண் மாற்றுத்திறனாளி விவசாயத் தொழிலாளர் உழவர் பாதுகாப்பு ஆதரவற்ற தொகை",
         title="Social Security Schemes · Tamil Nadu CRA",
         url="https://cra.tn.gov.in/about_schemes_t.php",
         owner="Commissionerate of Revenue Administration and Disaster Management, Tamil Nadu",
         locator="Tamil scheme overview",
-        status="Official overview · dates may be stale; do not rely on amounts",
+        status="Official overview · amounts dated 2023; confirm current figures with the Taluk office",
         text_en=(
             "Tamil Nadu's Commissionerate of Revenue Administration lists social-security pension "
             "program categories including older adults, widows, persons with disabilities, agricultural "
-            "workers, and other groups. The page also contains monetary and eligibility details tied to "
-            "dated policy periods. CivicLens treats this page as a discovery lead only; current amounts "
-            "and criteria are not verified."
+            "workers, and other groups. As checked on 10 November 2026, the page states that the "
+            "disability pension was raised to Rs 1,500 a month from 1 January 2023 and the other "
+            "social-security pensions to Rs 1,200 a month from August 2023, and that applications are "
+            "made through Tamil Nadu e-Sevai. These figures are dated; CivicLens has not verified that "
+            "they are current, and eligibility must be decided by the Revenue Department."
         ),
         text_ta=(
             "வருவாய் நிர்வாக ஆணையரகத்தின் திட்டப் பக்கத்தில் முதியோர், விதவைகள், மாற்றுத் திறனாளிகள், "
             "விவசாயத் தொழிலாளர்கள் உள்ளிட்டோருக்கான சமூகப் பாதுகாப்பு ஓய்வூதியத் திட்ட வகைகள் "
-            "பட்டியலிடப்பட்டுள்ளன. பக்கத்தில் காலவரையறை கொண்ட தொகை மற்றும் தகுதி விவரங்களும் "
-            "உள்ளன. CivicLens இதைத் தகவல் கண்டறியும் ஆதாரமாக மட்டுமே கருதுகிறது; தற்போதைய "
-            "தொகைகளும் விதிகளும் உறுதிப்படுத்தப்படவில்லை."
+            "பட்டியலிடப்பட்டுள்ளன. 10 நவம்பர் 2026 அன்று பார்த்தபோது, மாற்றுத் திறனாளிகள் ஓய்வூதியம் "
+            "01.01.2023 முதல் மாதம் ரூ.1,500 ஆகவும், பிற சமூகப் பாதுகாப்பு ஓய்வூதியங்கள் ஆகஸ்டு 2023 "
+            "முதல் மாதம் ரூ.1,200 ஆகவும் உயர்த்தப்பட்டதாகவும், விண்ணப்பங்கள் தமிழ்நாடு e-Sevai மூலம் "
+            "செய்யப்படுவதாகவும் பக்கம் கூறுகிறது. இவை பழைய தேதியிட்ட தொகைகள்; இவை தற்போதையவை என "
+            "CivicLens உறுதிப்படுத்தவில்லை; தகுதியை வருவாய்த் துறையே தீர்மானிக்கும்."
         ),
     ),
 )
