@@ -27,6 +27,8 @@ Do not enable the shared maintainer token on a public deployment; see [`ADMIN_GU
 
 The Vite dev server proxies `/api` to `http://127.0.0.1:8000`. No Gemini key or backend secret belongs in `VITE_*` variables or browser storage.
 
+`VITE_API_BASE` (optional, public) sets the API origin when the frontend and API are hosted separately, for example `https://civiclens-api.onrender.com`. Leave it unset locally. The backend's `ALLOWED_ORIGINS` must then list the frontend origin exactly.
+
 ## Secrets
 
 Do not paste keys into source files, shell output, bug reports, or commits. If a key is exposed, revoke it and replace it. `.env.example` contains blank placeholders only.

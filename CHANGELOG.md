@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-10 — Phase 5: deployment preparation (not deployed)
+
+- **Migration 0002 (TD-17):** pgvector `VECTOR(768)` column with HNSW index, English and Tamil (`simple`) full-text GIN indexes, `scheme_aliases` and `scheme_changes` tables. Additive; not applied anywhere.
+- **Hosting config:** `render.yaml` for a free Render API service (manual deploys, secrets entered in the dashboard) and `frontend/public/_headers` for Cloudflare Pages security headers.
+- **Frontend:** optional public `VITE_API_BASE` so the client can call an API on another origin.
+
 ## 2026-11-10 — Phase 4: hardening
 
 - **Provider health (TD-06):** `/api/health` and the maintainer overview report `HEALTHY`, `DEGRADED`, `RATE_LIMITED`, `UNAVAILABLE` or `CONFIGURATION_ERROR`. After a Gemini 429 the backend stops calling Gemini for the server's `Retry-After` (default 60 s, max 10 min) and answers in cited search mode.
