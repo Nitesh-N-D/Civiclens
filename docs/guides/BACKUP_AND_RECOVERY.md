@@ -1,6 +1,6 @@
 # Backup and recovery plan
 
-**Status:** The optional database holds only `api_usage_daily` (aggregate counters, no personal data) plus empty schema tables, so it needs no backup today: recovery is re-running `scripts/migrate.py` on a new project. The plan below applies once reviewed source records live in PostgreSQL. Supabase's free plan has no automatic backups; use `pg_dump` before any schema change.
+**Status:** The optional database holds `api_usage_daily` (aggregate counters, no personal data) and a seeded copy of the public corpus that is also in the repository, so it needs no backup today: recovery is re-running `scripts/migrate.py` then `scripts/seed_corpus.py` on a new project. The plan below applies once reviewed source records live in PostgreSQL. Supabase's free plan has no automatic backups; use `pg_dump` before any schema change.
 
 ## Data to protect
 

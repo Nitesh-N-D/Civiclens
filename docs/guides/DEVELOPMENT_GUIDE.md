@@ -24,7 +24,8 @@ Use the review lifecycle in `docs/research/PRODUCT_REQUIREMENTS.md`. A maintaine
 
 - API routes are under `/api`.
 - Response errors do not contain provider messages, credentials, or tracebacks.
-- `GET /api/health` reports coarse configuration health only, including `provider.state` (`HEALTHY`, `DEGRADED`, `RATE_LIMITED`, `UNAVAILABLE`, `CONFIGURATION_ERROR`) and `database` (`not_configured`, `connected`, `unavailable`; cached 60 s, never the URL).
+- `GET /api/health` reports coarse configuration health only, including `provider.state` (`HEALTHY`, `DEGRADED`, `RATE_LIMITED`, `UNAVAILABLE`, `CONFIGURATION_ERROR`) and `database` (`not_configured`, `connected`, `unavailable`; cached 60 s, never the URL) and `corpus` (`built_in` or `database`).
+- The corpus lives in `backend/app/corpus.py` and `backend/app/changes.py`. With `DATABASE_URL` set the API serves the copy in PostgreSQL instead (reloaded every 10 minutes); after editing the Python records run `python scripts/seed_corpus.py` so the database picks them up.
 - Lint the backend with `pip install -r requirements-dev.txt` then `python -m ruff check .` (also run in CI).
 - `GET /api/sources` returns public source metadata.
 - `POST /api/ask` takes `{ "question": "...", "language": "en" | "ta" }` and returns an answer mode, cited sources, a caveat, and `notices` (scheme change notices labelled `official` or `reported`).

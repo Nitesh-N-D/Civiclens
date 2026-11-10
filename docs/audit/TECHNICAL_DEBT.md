@@ -22,7 +22,7 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-11 | Partly: strings in `copy.ts`, types in `types.ts`, change and print components split out. `App.tsx` still holds most layout. |
 | TD-14 | **Fixed.** Corpus tokenised once at import. |
 | TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
-| TD-17 | Mostly fixed (Phase 6): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS. Open: corpus still static, not loaded from PostgreSQL. |
+| TD-17 | Mostly fixed (Phases 6–7): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS; `0004` + `scripts/seed_corpus.py` move the corpus into PostgreSQL and the API serves it from there with a built-in fallback. Open: embeddings are not yet stored in the `VECTOR` column, and retrieval is still in-process lexical scoring rather than SQL full-text/vector search. |
 
 ## S1
 

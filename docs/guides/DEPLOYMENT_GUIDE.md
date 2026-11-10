@@ -31,7 +31,7 @@ The repository now carries configuration for one candidate free-tier shape. The 
 |---|---|---|
 | API | Render free web service (sleeps when idle; first request after sleep is slow) | [`render.yaml`](../../render.yaml) — `autoDeploy: false`, health check `/api/health`, keys and `ALLOWED_ORIGINS` entered in the dashboard (`sync: false`) |
 | Frontend | Cloudflare Pages, build `npm run build`, root `frontend`, output `dist` | [`frontend/public/_headers`](../../frontend/public/_headers) — security headers and CSP; set the CSP `connect-src` to the exact API origin |
-| Database | Supabase free PostgreSQL (optional). Today it only stores one aggregate daily Gemini counter; answers never depend on it | [`0001`–`0003`](../../backend/migrations/README.md), [`scripts/migrate.py`](../../backend/scripts/migrate.py) |
+| Database | Supabase free PostgreSQL (optional). Stores the aggregate daily Gemini counter and the reviewed corpus; if it is down the API answers from the last good or built-in corpus | [`0001`–`0004`](../../backend/migrations/README.md), [`scripts/migrate.py`](../../backend/scripts/migrate.py) |
 
 Steps once approved:
 
@@ -44,11 +44,11 @@ Steps once approved:
 
 1. Create a free Supabase project (no billing). Note the database password; do not commit it.
 2. Copy the **Transaction pooler** connection string (Connect → port 6543, IPv4-compatible; Render free has no IPv6 egress for the direct host) and append `?sslmode=require`.
-3. Put it in `backend/.env` as `DATABASE_URL=` and run `python scripts/migrate.py` from `backend/` once (`--status` lists what is applied). Each file runs in one transaction and records itself, so re-running is safe.
+3. Put it in `backend/.env` as `DATABASE_URL=` and run `python scripts/migrate.py` from `backend/` once (`--status` lists what is applied). Each file runs in one transaction and records itself, so re-running is safe. Then run `python scripts/seed_corpus.py` to copy the built-in corpus into the database (also safe to re-run).
 4. Enter the same URL as the `DATABASE_URL` secret on Render.
-5. `/api/health` should then report `"database": "connected"`. `unavailable` means the API keeps working on the in-memory budget.
+5. `/api/health` should then report `"database": "connected"` and `"corpus": "database"`. `unavailable` means the API keeps working on the in-memory budget.
 
-Only this server-side URL is used. The anon and `service_role` keys are not needed and should not be configured: the frontend never calls Supabase, and migration 0003 enables RLS with no policies on every table so the public Data API sees nothing. Free projects pause after about a week without activity and have no automatic backups (see [backup and recovery](BACKUP_AND_RECOVERY.md)); losing this database loses only a usage counter.
+Only this server-side URL is used. The anon and `service_role` keys are not needed and should not be configured: the frontend never calls Supabase, and migration 0003 enables RLS with no policies on every table so the public Data API sees nothing. Free projects pause after about a week without activity and have no automatic backups (see [backup and recovery](BACKUP_AND_RECOVERY.md)); losing this database loses a usage counter and seeded copies of records that are also in the repository, so re-running the migrations and the seed script restores it.
 
 ## Release sequence
 

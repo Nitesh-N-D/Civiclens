@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-10 — Phase 7: corpus in PostgreSQL, readable UI
+
+- **Corpus from the database (TD-17):** migration `0004` adds the fields the runtime needs (source status label and order, Tamil scheme fields, change-notice names). `scripts/seed_corpus.py` copies the built-in sources, schemes and change notices into PostgreSQL in one transaction; it is idempotent and keeps every distinct source text as its own `source_versions` row (new versions start `review_pending`, never auto-approved).
+- **Runtime:** with `DATABASE_URL` set, the API loads sources, schemes and notices from PostgreSQL at startup and every 10 minutes (retry after 60 s on failure). Rows without an `https` URL or text are skipped; retired or contested versions are excluded. If the database is down or empty the last good corpus (initially the built-in records) keeps answering. `/api/health` adds `corpus: built_in | database`.
+- **Refactor:** tokenisation moved to `app/text.py`; retrieval rebuilds its index whenever the active corpus changes.
+- **Frontend:** larger type throughout (body text 16–18 px), all text colours at least 4.8:1 contrast, a dark theme that follows the system setting with a ☀/☾ toggle (remembered in the browser), and a favicon (SVG, 32 px PNG, Apple touch icon).
+- Tests: 47 unit tests (6 new). Retrieval evaluation on the database corpus: Recall@4 14/14, MRR 1.0, abstention 6/6.
+
 ## 2026-11-10 — Phase 6: optional Supabase wiring
 
 - **Persistent budget:** with `DATABASE_URL` set, the shared daily Gemini count is stored in PostgreSQL (`api_usage_daily`, one atomic upsert per call) so it survives Render's idle restarts. Any database error falls back to the in-memory count and pauses database attempts for 60 s; answers never wait on or fail because of the database.
