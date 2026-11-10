@@ -2,9 +2,10 @@ import re
 from datetime import datetime, timedelta, timezone
 from threading import Lock
 
+from .changes import matching_changes, public_change
 from .corpus import public_source
 from .gemini import GeminiProvider, ProviderFailure
-from .models import AskResponse, Citation
+from .models import AskResponse, ChangeNotice, Citation
 from .retrieval import retrieve
 
 # Identifiers and secrets are refused before retrieval or generation. Situational
@@ -159,6 +160,16 @@ def _citations(hits: list[tuple[object, float]]) -> list[Citation]:
 
 def answer_question(question: str, language: str, provider: GeminiProvider, budget: RequestBudget,
                     per_minute: int, per_day: int, cache: AnswerCache | None = None) -> AskResponse:
+    response = _answer(question, language, provider, budget, per_minute, per_day, cache)
+    if contains_sensitive_details(question):
+        return response
+    # Change notices (renames, rate revisions) sit beside the answer, never inside it.
+    notices = [ChangeNotice(**public_change(change, language)) for change in matching_changes(question)]
+    return response.model_copy(update={"notices": notices}) if notices else response
+
+
+def _answer(question: str, language: str, provider: GeminiProvider, budget: RequestBudget,
+            per_minute: int, per_day: int, cache: AnswerCache | None) -> AskResponse:
     warning = TA_WARNING if language == "ta" else WARNING
     if mentions_personal_context(question):
         warning += TA_CONTEXT_NOTE if language == "ta" else CONTEXT_NOTE

@@ -41,8 +41,19 @@ class SchemeCard(BaseModel):
     eligibility_enabled: bool = False
 
 
+class ChangeNotice(BaseModel):
+    id: str
+    scheme: str
+    status: Literal["official", "reported"]
+    summary: str
+    source_title: str
+    source_url: str
+    checked_at: str
+
+
 class AskResponse(BaseModel):
     text: str
     citations: list[Citation]
     mode: Literal["ai", "search"]
     warning: str
+    notices: list[ChangeNotice] = Field(default_factory=list)

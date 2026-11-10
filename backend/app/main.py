@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from .changes import CHANGES, public_change
 from .config import settings
 from .corpus import SOURCES, public_schemes, public_source
 from .gemini import GeminiProvider
@@ -51,6 +52,12 @@ def sources() -> dict[str, list[dict[str, str | None]]]:
 def schemes(language: str = "en"):
     selected_language = "ta" if language == "ta" else "en"
     return {"schemes": [scheme.model_dump() for scheme in public_schemes(selected_language)]}
+
+
+@app.get("/api/changes")
+def changes(language: str = "en") -> dict[str, list[dict[str, str]]]:
+    selected_language = "ta" if language == "ta" else "en"
+    return {"changes": [public_change(change, selected_language) for change in CHANGES]}
 
 
 @app.get("/api/admin/overview")
