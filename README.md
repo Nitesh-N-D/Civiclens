@@ -59,7 +59,7 @@ cd ..\backend
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TESTING.md), [`SECURITY.md`](SECURITY.md), [`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md), [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md), [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md), and [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md).
+More detail (index: [`docs/README.md`](docs/README.md)): [`DEVELOPMENT_GUIDE.md`](docs/guides/DEVELOPMENT_GUIDE.md), [`TESTING.md`](docs/guides/TESTING.md), [`SECURITY.md`](SECURITY.md), [`ENVIRONMENT_SETUP.md`](docs/guides/ENVIRONMENT_SETUP.md), [`ADMIN_GUIDE.md`](docs/guides/ADMIN_GUIDE.md), [`DEPLOYMENT_GUIDE.md`](docs/guides/DEPLOYMENT_GUIDE.md), and [`PRODUCTION_CHECKLIST.md`](docs/guides/PRODUCTION_CHECKLIST.md).
 
 ## Known limitations
 
