@@ -1,7 +1,7 @@
 # Competitor and alternative analysis
 
 **Status:** Phase 0–1 desk review of official product descriptions
-**Research date:** 9 November 2026
+**Research date:** 9 November 2026; **updated 10 November 2026** with Namma Arasu, the myScheme chatbot, Kisan e-Mitra, Jugalbandi, and Haqdarshak. The earlier finding that no comparable AI assistant had surfaced is **withdrawn**.
 
 “Competitor” here includes public portals and offline/assisted alternatives that already solve parts of the task. Feature assessments below use official descriptions, not independent usability tests. No claim is made that CivicLens is unique.
 
@@ -15,8 +15,12 @@
 | [India.gov.in](https://www.india.gov.in/) | National portal linking to government information, services, and resources. | Broad national discovery. | A directory can help find a destination but may leave citizens to reconcile detailed conditions across departmental pages. Validate against selected user journeys. |
 | [DigiLocker](https://www.digilocker.gov.in/) | Secure document wallet and issuer-based document access. | Document retrieval and verification. | Adjacent infrastructure rather than scheme discovery. CivicLens should never ask users to upload identity documents merely to answer general questions and should link to official document workflows where appropriate. |
 | e-Sevai centers, Common Service Centres, and local helpers | Human assistance and access to online services, especially for people who prefer supported workflows. | In-person, contextual help. | A crucial alternative and potential feedback/distribution partner. No interviews with center operators have been conducted; do not assume the centers are inadequate or uniformly accessible. |
-| Commercial and private scheme-information websites/apps | Search results include private and unofficial scheme explainers. | Varies widely. | No specific private product was sufficiently verified in this desk pass to support a feature or quality comparison. Review named products and their ownership, sources, privacy terms, and update practices before making comparative claims. |
-| AI public-information assistants | No independently verified, Tamil Nadu-focused product with comparable evidence surfaced in the primary-source searches used for this pass. | Unknown. | Search absence is not proof that none exist. Run a wider product scan and test actual assistants before making a uniqueness claim. |
+| **Namma Arasu** (Government of Tamil Nadu / TNeGA, with Meta), *added 10 Nov 2026* | Official WhatsApp chatbot unveiled at UmagineTN in January 2026: about 50 citizen services across 16 departments, including certificates, bill payments, grievances, and welfare-scheme lookup. Secondary sources list *Pudhumai Penn* and *Tamil Pudhalvan* eligibility checks and application-status checks. Reached at +91 7845 252525. [Elets eGov](https://egov.eletsonline.com/2026/01/tamil-nadu-launches-namma-arasu-whatsapp-chatbot-to-offer-50-government-services/), [Vikaspedia](https://egovernance.vikaspedia.in/viewcontent/e-governance/mobile-governance/namma-arasu-chatbot-of-tamil-nadu?lgn=en), [Medianews4u](https://www.medianews4u.com/government-of-tamil-nadu-launches-namma-arasu-whatsapp-chatbot-for-citizen-services/) | **Tamil and English**, on WhatsApp, which needs no new app. Intent-based (per TNeGA CEO quoted in launch coverage). | **The closest direct competitor, and it is the state itself.** It removes "Tamil conversational scheme access for TN" as a differentiator. Its strengths are official authority, transactions, and WhatsApp reach. Not established: whether it shows source passages or dates, explains *why* a condition applies, compares schemes, covers central schemes, or kept running after the May 2026 change of government. No official tn.gov.in page was found; all sources are press or secondary. **Hands-on testing is needed before claiming any gap.** |
+| **myScheme AI chatbot** (NeGD), *added 10 Nov 2026* | myScheme's FAQ describes a voice-enabled AI chatbot for scheme discovery, with context-aware conversation and session history. [myScheme FAQ](https://www.myscheme.gov.in/faqs) | The FAQ lists chatbot language support as **Hindi and English**; the site content is in 15 languages (not enumerated). | Tamil chatbot support is not documented. National coverage of central and state schemes. Tamil support could be added at any time, so this gap is not durable. |
+| **Kisan e-Mitra** (MoA&FW; built by Wadhwani AI with Bhashini, EkStep, NIC), *added 10 Nov 2026* | AI chatbot inside the PM-KISAN app, launched Sept 2023, answering payment, application-status, and eligibility queries for one flagship scheme. Wadhwani AI reports 3M+ queries resolved since its Feb 2024 upgrade. [PIB launch](https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1959461), [Wadhwani AI](https://www.wadhwaniai.org/impact/agriculture-solutions/kisan-e-mitra/) | 11 Indic languages, **Tamil included**, by voice and text. | Shows that an official, scheme-specific, Tamil-capable AI assistant works at scale. CivicLens should **deep-link to it for PM-KISAN**, not compete. |
+| **Jugalbandi** (Microsoft, AI4Bharat/IIT Madras, OpenNyAI), *added 10 Nov 2026* | 2023 WhatsApp pilot answering questions on 171 government programmes, with speech in and out. [Microsoft Source Asia](https://news.microsoft.com/source/asia/features/with-help-from-next-generation-ai-indian-villagers-gain-easier-access-to-government-services/), [MediaNama](https://www.medianama.com/2023/06/223-jugalbandi-chatbot-rural-india-what-to-know/) | 10 languages at launch. | A precedent for LLM + Indic translation for scheme information. Contemporary coverage flagged misinformation risk, which supports CivicLens's evidence-first stance. Current operational status is unknown. |
+| **Haqdarshak** (Haqdarshak Empowerment Solutions Pvt Ltd), *added 10 Nov 2026* | Social enterprise (founded 2016) with an app plus a trained field-agent network: discovery, eligibility questions, and assisted applications. It reports 6,000+ schemes in its app, 10+ languages, and 7M+ citizens reached (self-reported). The app states it is not a government app. [MIT Solve](https://solve.mit.edu/solutions/101897), [Play Store](https://play.google.com/store/apps/details?id=com.haqdarshak.jana&hl=en_IN) | 10+ Indian languages (Tamil not individually confirmed). | Strongest private comparator. Its moat is the **human agent network and B2B partnerships**, not the software. It shows that assisted access matters, and it is a possible partner as well as a competitor. |
+| Other commercial scheme-information sites | Many unofficial explainers (e.g. SEO "yojana" sites). | Varies. | Often ad-funded and of unverified freshness. One seen in this pass already reports post-2026 TN scheme changes ahead of official consolidated pages, which shows both the demand and the misinformation risk. Not treated as sources. |
 
 ## Product implications
 
@@ -25,6 +29,20 @@
 3. **Treat human assistance as part of the journey.** The user may need an e-Sevai center or department contact, not another screen.
 4. **Measure parity rather than asserting superiority.** Compare Tamil and English task completion, coverage, readability, source visibility, and route-to-application against existing official tools.
 5. **Minimize duplication.** Where an official portal already answers a question well, return the official route and explain it instead of copying state that will drift.
+6. **Treat Namma Arasu as the benchmark, not an obstacle (added 10 Nov 2026).** Before building further, run the same 10 representative questions through Namma Arasu, the myScheme chatbot, and the CivicLens prototype, in Tamil and English. Record answer correctness, whether a source and date were shown, whether conditions were explained, and whether the route to apply was clear. If Namma Arasu already does well on evidence and explanation, narrow CivicLens to what it does not do, or stop.
+
+## Positioning map (desk assessment, unverified by hands-on testing)
+
+| Capability | myScheme | Namma Arasu | Haqdarshak | Kisan e-Mitra | CivicLens target |
+|---|---|---|---|---|---|
+| Tamil conversation | Not documented | Yes | Possibly | Yes (PM-KISAN only) | Yes |
+| Central + TN state schemes together | Yes | TN-focused | Yes | One scheme | Yes |
+| Passage-level citation and checked date | Not observed | Unknown | Not observed | Unknown | **Core** |
+| Condition-by-condition "why / why not" | Questionnaire | Unknown | Questionnaire | Status only | **Core** |
+| Cross-scheme comparison | No | Unknown | No | No | Planned |
+| Change tracking after scheme renames | Unknown | Unknown | Unknown | n/a | **Core** |
+| Transactions or applications | Links out | **Yes** | Via agents | Status | No (by design) |
+| Human-assisted route | No | No | **Yes** | No | Links to e-Sevai |
 
 ## Evidence gaps
 

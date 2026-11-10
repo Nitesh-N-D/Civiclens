@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-10 — Phase 0/1 re-audit (documentation only)
+
+- Added `docs/audit/` (project audit, existing-system analysis, technical-debt register TD-01…TD-17, environment requirements, development safety).
+- Refreshed Phase 1 research: Namma Arasu, the myScheme chatbot, Kisan e-Mitra, Jugalbandi and Haqdarshak added to the competitor analysis; differentiation re-ranked; post-2026 scheme renames and DPDP Rules timeline noted.
+- Added `docs/research/FREE_TIER_AUDIT.md`.
+- No application code changed. Known blockers (privacy over-blocking, no retrieval threshold, deprecated default model) are recorded but not yet fixed.
+
 ## 2026-11-09 — Initial implementation milestone
 
 - Audited official government discovery sources and documented source freshness/access conditions.

@@ -6,7 +6,13 @@
 
 ## Repository audit (Phase 0)
 
-The selected workspace resolves to `D:\CivicLens`. It contains `AGENTS.md` and `CLAUDE.md` only. There is no Git repository metadata (`git status` reports “not a git repository”), no source code, dependency manifest, tests, documentation set, application configuration, or existing product behavior to assess. There is therefore nothing to reuse or replace yet. The project-specific safety instructions in both files were read; they reinforce a Windows-only workspace boundary, lightweight local work, no local model training, no secrets in source control, and no deployment or paid-service action without approval.
+> **Superseded 10 November 2026.** When this paragraph was written (9 Nov) the folder held only `AGENTS.md` and `CLAUDE.md` and was not yet a Git repository. It now holds a Git-tracked prototype. The current audit is in [`docs/audit/PROJECT_AUDIT.md`](../audit/PROJECT_AUDIT.md).
+
+## Context changes found 10 November 2026
+
+- **Official Tamil chatbot exists.** Tamil Nadu's *Namma Arasu* WhatsApp bot (Jan 2026) covers about 50 services and welfare-scheme lookup in Tamil and English. This narrows CivicLens's opportunity; see the revised [Product differentiation](PRODUCT_DIFFERENTIATION.md).
+- **Change of state government (May 2026)** and a budget that renamed several schemes. Scheme names, amounts, and portals in older official pages, myScheme summaries, and citizens' memories may now disagree. This raises both the value of change tracking and the risk of serving stale content.
+- **DPDP Rules, 2025** were notified on 13–14 Nov 2025 in three phases; most substantive obligations apply from **13 May 2027**. [PIB](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190014&reg=3&lang=2). Design for consent notices, purpose limitation, and erasure now, so a pilot does not need rework.
 
 ## Opportunity and problem evidence
 
@@ -81,7 +87,8 @@ The proposed initial scope fits ordinary source editing and lightweight developm
 7. **Inclusion and trust:** a chatbot may not fit low-literacy users or those without devices; preserve assisted and offline routes.
 8. **Existing alternatives:** myScheme/UMANG already offer discovery; incremental product value must be demonstrated.
 9. **Sustainability:** “free” services can pause, change quotas, restrict non-commercial use, or require paid plans.
-10. **No repository history:** this folder is not presently a Git repository, so current history and branch state cannot be inspected. No Git initialization was performed.
+10. **Duplication of an official channel (added 10 Nov 2026):** Namma Arasu may already cover the core journey; benchmark before building further.
+11. **Provider model churn (added 10 Nov 2026):** the prototype's default `gemini-2.5-flash` shuts down 1 Dec 2026. Keep model IDs environment-driven and check the deprecations page at each milestone.
 
 ## Recommended roadmap and gate
 

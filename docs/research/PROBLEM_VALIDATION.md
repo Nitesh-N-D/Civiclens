@@ -20,6 +20,15 @@ This is institutional and desk-research evidence. No citizens have been intervie
 | Tamil language is central to the state context | Census 2011's language table records Tamil as the mother tongue of 63,753,997 people, or 88.37% of Tamil Nadu's population at that time. [Census of India, C-16 / Language Survey](https://censusindia.gov.in/nada/index.php/catalog/10222) | Tamil-first content and interaction deserve priority. | This is 2011 census data, not a current population estimate; mother tongue is not the same as preferred service language or literacy. |
 | Internet access remains uneven by geography | TRAI reported March 2025 internet subscriber tele-density of 45.03 per 100 in rural India and 110.79 per 100 in urban India. [TRAI, Indian Telecom Services Performance Indicators](https://www.trai.gov.in/sites/default/files/2025-07/YIR_08072025_0.pdf) | Design should support mobile, low-bandwidth use and non-digital handoff. | Subscriber tele-density is not the share of unique people online; it is national context, not a Tamil Nadu estimate. |
 
+### Signals added 10 November 2026
+
+| Signal | Evidence | What it supports | Limit |
+|---|---|---|---|
+| The state itself invested in conversational Tamil access | TN launched the Namma Arasu WhatsApp chatbot (Jan 2026), including welfare-scheme lookup. [Elets eGov](https://egov.eletsonline.com/2026/01/tamil-nadu-launches-namma-arasu-whatsapp-chatbot-to-offer-50-government-services/) | The access problem is real enough for government to act on it | It also means part of the problem is already being addressed officially |
+| Scheme information churns | After the 2026 election, the state budget renamed several existing schemes (e.g. *Kalaignar Magalir Urimai Thogai → Magalir Urimai Thittam*; *Naan Mudhalvan → Vetri Skill Training Scheme*), and new schemes were created by GO (e.g. *Annan Seer Thittam*, GO dated 5 Oct 2026, per secondary reporting). [The Federal](https://thefederal.com/category/states/south/tamil-nadu/tn-budget-welfare-schemes-rebranding-to-vetri-opposition-slams-tvk-252624) | Freshness and change-tracking are a live problem, not a hypothetical one | News sources, not GOs; each rename must be confirmed against the official order |
+| Scale demand exists for scheme-specific AI help | Wadhwani AI reports Kisan e-Mitra resolved 3M+ queries since Feb 2024. [Wadhwani AI](https://www.wadhwaniai.org/impact/agriculture-solutions/kisan-e-mitra/) | Citizens will use an AI channel for scheme questions | Self-reported, single scheme, official channel |
+| AI scheme bots carry misinformation risk | Jugalbandi coverage (2023) noted errors could mislead people about benefits. [MediaNama](https://www.medianama.com/2023/06/223-jugalbandi-chatbot-rural-india-what-to-know/) | Evidence-first answers and abstention are justified | Anecdotal; no measured error rate |
+
 ## Claims not yet validated
 
 - Citizens routinely miss eligible schemes because information is hard to find.
