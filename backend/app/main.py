@@ -1,17 +1,28 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .changes import CHANGES, public_change
+from . import corpus_store
+from .changes import public_change
 from .config import settings
-from .corpus import SOURCES, public_schemes, public_source
+from .corpus import public_schemes, public_source
 from .db import database_status
 from .gemini import GeminiProvider
 from .models import AskRequest, AskResponse
 from .security import valid_bearer_token
 from .service import AnswerCache, ClientLimiter, PersistentBudget, answer_question
 
-app = FastAPI(title="CivicLens API", version="0.1.0", docs_url="/api/docs", redoc_url=None)
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # Load the corpus from PostgreSQL when configured; otherwise stay on the built-in records.
+    corpus_store.enable_database()
+    yield
+
+
+app = FastAPI(title="CivicLens API", version="0.1.0", docs_url="/api/docs", redoc_url=None, lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list(settings.allowed_origins),
@@ -69,7 +80,8 @@ def health() -> dict[str, object]:
     return {
         "status": "ok",
         "provider": provider.public_status,
-        "source_count": len(SOURCES),
+        "source_count": len(corpus_store.active().sources),
+        "corpus": corpus_store.active().origin,
         "admin_enabled": bool(settings.admin_token),
         "database": database_status(),
     }
@@ -77,7 +89,7 @@ def health() -> dict[str, object]:
 
 @app.get("/api/sources")
 def sources() -> dict[str, list[dict[str, str | None]]]:
-    return {"sources": [public_source(source) for source in SOURCES]}
+    return {"sources": [public_source(source) for source in corpus_store.active().sources]}
 
 
 @app.get("/api/schemes")
@@ -89,7 +101,7 @@ def schemes(language: str = "en"):
 @app.get("/api/changes")
 def changes(language: str = "en") -> dict[str, list[dict[str, str]]]:
     selected_language = "ta" if language == "ta" else "en"
-    return {"changes": [public_change(change, selected_language) for change in CHANGES]}
+    return {"changes": [public_change(change, selected_language) for change in corpus_store.active().changes]}
 
 
 @app.get("/api/admin/overview")
@@ -97,7 +109,7 @@ def admin_overview(authorization: str | None = Header(default=None)) -> dict[str
     expected = settings.admin_token
     if not valid_bearer_token(expected, authorization):
         raise HTTPException(status_code=404, detail="Not found")
-    source_rows = [public_source(source) for source in SOURCES]
+    source_rows = [public_source(source) for source in corpus_store.active().sources]
     return {
         "sources": source_rows,
         "source_count": len(source_rows),

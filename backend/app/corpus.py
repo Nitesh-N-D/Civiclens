@@ -166,13 +166,16 @@ def public_source(chunk: SourceChunk) -> dict[str, str | None]:
 
 
 def public_schemes(language: str = "en") -> list[SchemeCard]:
-    source_ids = {source.id for source in SOURCES}
+    from . import corpus_store  # late import: corpus_store imports this module
+
+    corpus = corpus_store.active()
+    by_id = {source.id: source for source in corpus.sources}
+    is_tamil = language == "ta"
     cards = []
-    for scheme_id, record in SCHEMES.items():
-        if record["source_id"] not in source_ids:
+    for scheme_id, record in corpus.schemes.items():
+        source = by_id.get(record["source_id"])
+        if source is None:
             continue
-        is_tamil = language == "ta"
-        source = next(source for source in SOURCES if source.id == record["source_id"])
         cards.append(SchemeCard(
             id=scheme_id,
             title=record["title_ta"] if is_tamil else record["title_en"],

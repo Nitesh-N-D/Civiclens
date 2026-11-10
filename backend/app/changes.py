@@ -8,7 +8,8 @@ presented as a government decision.
 from dataclasses import dataclass
 from typing import Literal
 
-from .retrieval import _matches, query_tokens
+from .text import matches as _matches
+from .text import query_tokens
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,7 @@ class SchemeChange:
     # Names people may still use, old and new; matched against questions.
     names: tuple[str, ...]
     status: Literal["official", "reported"]
+    change_type: Literal["rename", "continuation", "rate_revision", "withdrawal", "new"]
     summary_en: str
     summary_ta: str
     source_title: str
@@ -33,6 +35,7 @@ CHANGES: tuple[SchemeChange, ...] = (
         scheme_ta="புதுமைப் பெண்",
         names=("pudhumai penn", "puthumai penn", "moovalur ramamirtham", "புதுமைப் பெண்", "புதுமை பெண்", "மூவலூர்"),
         status="reported",
+        change_type="continuation",
         summary_en=(
             "News reports from May 2026 say the new Tamil Nadu government will continue Pudhumai Penn. "
             "CivicLens found no rename. This is a news report, not a Government Order."
@@ -52,6 +55,7 @@ CHANGES: tuple[SchemeChange, ...] = (
         names=("magalir urimai", "urimai thogai", "mathippumigu", "madhippumigu", "மகளிர் உரிமை", "உரிமைத் தொகை",
                "மதிப்புமிகு"),
         status="reported",
+        change_type="rename",
         summary_en=(
             "News reports say the government is considering renaming this scheme 'Mathippumigu Magalir Thittam' "
             "and changing the amount. No Government Order confirming this was found. CivicLens has no reviewed "
@@ -72,6 +76,7 @@ CHANGES: tuple[SchemeChange, ...] = (
         scheme_ta="சமூகப் பாதுகாப்பு ஓய்வூதியங்கள்",
         names=("pension", "old age", "widow", "ஓய்வூதியம்", "முதியோர்", "விதவை", "கைம்பெண்"),
         status="official",
+        change_type="rate_revision",
         summary_en=(
             "The Revenue Administration page states that the disability pension became Rs 1,500 a month from "
             "1 January 2023 and the other social security pensions Rs 1,200 a month from August 2023. CivicLens "
@@ -96,9 +101,11 @@ def _name_tokens(name: str) -> list[str]:
 
 def matching_changes(question: str) -> list[SchemeChange]:
     """Changes whose any name appears (all its tokens) in the question."""
+    from . import corpus_store  # late import: corpus_store imports this module
+
     asked = query_tokens(question)
     found = []
-    for change in CHANGES:
+    for change in corpus_store.active().changes:
         for name in change.names:
             wanted = _name_tokens(name)
             if wanted and all(any(_matches(token, q) for q in asked) for token in wanted):

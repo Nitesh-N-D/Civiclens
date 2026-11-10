@@ -7,7 +7,9 @@ from .changes import matching_changes, public_change
 from .corpus import public_source
 from .gemini import GeminiProvider, ProviderFailure
 from .models import AskResponse, ChangeNotice, Citation
-from .retrieval import _matches, query_tokens, retrieve, tokens
+from .retrieval import retrieve
+from .text import matches as _matches
+from .text import query_tokens, tokens
 
 # Identifiers and secrets are refused before retrieval or generation. Situational
 # context ("I am a student", "நான் கல்லூரியில் படிக்கிறேன்", "I am 67") is the core
