@@ -105,7 +105,7 @@ def lexical_scores(query: str) -> list[float]:
 def cosine_similarity(first: list[float], second: list[float]) -> float:
     if len(first) != len(second) or not first:
         return 0.0
-    dot = sum(a * b for a, b in zip(first, second))
+    dot = sum(a * b for a, b in zip(first, second, strict=True))
     norm_first = math.sqrt(sum(a * a for a in first))
     norm_second = math.sqrt(sum(b * b for b in second))
     if not norm_first or not norm_second:

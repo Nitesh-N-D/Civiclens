@@ -7,7 +7,7 @@ import type { Answer, Change, Citation, Turn } from "./types";
 import { PrintChecklist } from "./PrintChecklist";
 
 type SchemeCard = { id: string; title: string; department: string; category: string; overview: string; url: string; source_id: string; status: string; eligibility_enabled: boolean };
-type AdminOverview = { sources: Citation[]; source_count: number; human_verified_count: number; review_pending_count: number; provider: { configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null }; monitoring: string; mutations_enabled: boolean };
+type AdminOverview = { sources: Citation[]; source_count: number; human_verified_count: number; review_pending_count: number; provider: { state?: string; configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null }; monitoring: string; mutations_enabled: boolean };
 
 
 
@@ -304,7 +304,7 @@ function App() {
             </form>}
             {adminOverview && <>
               <div className="admin-kpis"><div><b>{adminOverview.source_count}</b><small>{t.sources}</small></div><div><b>{adminOverview.human_verified_count}</b><small>{t.verified}</small></div><div><b>{adminOverview.review_pending_count}</b><small>{t.pendingReview}</small></div><div><b>{adminOverview.provider.configured ? `${adminOverview.provider.configured_keys} key(s)` : "Off"}</b><small>Gemini</small></div></div>
-              <p className="admin-monitoring">{t.monitoringOff} {language === "en" ? "Provider status" : "சேவை நிலை"}: {adminOverview.provider.last_failure_category || (adminOverview.provider.last_request_succeeded === false ? "unavailable" : "no recent request")}</p>
+              <p className="admin-monitoring">{t.monitoringOff} {language === "en" ? "Provider status" : "சேவை நிலை"}: {adminOverview.provider.state ?? adminOverview.provider.last_failure_category ?? "unknown"}</p>
               <div className="admin-source-list">{adminOverview.sources.map((source) => <div className="admin-source-row" key={source.id}><span><b>{source.title}</b><small>{source.owner} · {source.desk_checked_at ? `Desk review ${source.desk_checked_at}` : "No review date"}</small></span><em>{source.human_verified_at || t.pendingReview}</em></div>)}</div>
               <button className="text-button admin-clear" onClick={clearAdminSession}>{t.clearToken}</button>
             </>}

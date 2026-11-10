@@ -36,6 +36,21 @@ ANSWER_SCHEMA: dict[str, Any] = {
 class ProviderFailure(Exception):
     kind: str
     status: int | None = None
+    retry_after: float | None = None
+
+
+# After a 429, stop calling Gemini for this long (or for the server's Retry-After) so
+# repeated requests do not burn the shared free-tier quota (TD-06).
+DEFAULT_COOLDOWN_SECONDS = 60.0
+MAX_COOLDOWN_SECONDS = 600.0
+
+
+def _retry_after_seconds(value: str | None) -> float | None:
+    try:
+        seconds = float(value) if value is not None else None
+    except ValueError:
+        return None  # HTTP-date form is ignored; the default cool-down applies.
+    return min(max(seconds, 1.0), MAX_COOLDOWN_SECONDS) if seconds is not None else None
 
 
 class GeminiProvider:
@@ -45,6 +60,19 @@ class GeminiProvider:
         self._last_failure: str | None = None
         self._last_success = False
         self._key_health = ["configured" for _ in self._keys]
+        self._cooldown_until = 0.0
+
+    def _state(self) -> str:
+        """Brief's health vocabulary: HEALTHY / DEGRADED / RATE_LIMITED / UNAVAILABLE / CONFIGURATION_ERROR."""
+        if not self._keys or self._last_failure == "credentials_unavailable":
+            return "CONFIGURATION_ERROR"
+        if time.monotonic() < self._cooldown_until or self._last_failure == "quota":
+            return "RATE_LIMITED"
+        if self._last_failure == "provider_unavailable":
+            return "UNAVAILABLE"
+        if "credential_error" in self._key_health:
+            return "DEGRADED"
+        return "HEALTHY"
 
     @property
     def available(self) -> bool:
@@ -54,6 +82,7 @@ class GeminiProvider:
     def public_status(self) -> dict[str, Any]:
         with self._lock:
             return {
+                "state": self._state(),
                 "configured": bool(self._keys),
                 "configured_keys": len(self._keys),
                 "last_request_succeeded": self._last_success if self._keys else None,
@@ -78,8 +107,9 @@ class GeminiProvider:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as error:
             status = int(error.code)
+            retry_after = _retry_after_seconds(error.headers.get("Retry-After")) if error.headers else None
             # Never surface provider response bodies or request headers to the caller.
-            raise ProviderFailure("http", status) from None
+            raise ProviderFailure("http", status, retry_after) from None
         except (TimeoutError, urllib.error.URLError, OSError):
             raise ProviderFailure("network") from None
         except (UnicodeDecodeError, json.JSONDecodeError):
@@ -88,6 +118,11 @@ class GeminiProvider:
     def _call(self, endpoint: str, body: dict[str, Any]) -> dict[str, Any]:
         if not self._keys:
             raise ProviderFailure("not_configured")
+        with self._lock:
+            remaining = self._cooldown_until - time.monotonic()
+        if remaining > 0:
+            # Still cooling down after a quota error: answer from search without a network call.
+            raise ProviderFailure("quota", 429, remaining)
         url = f"{API_ROOT}/{endpoint}"
         last_error = ProviderFailure("network")
         for key_index, key in enumerate(self._keys):
@@ -132,7 +167,9 @@ class GeminiProvider:
         with self._lock:
             self._last_success = False
             self._last_failure = category
-        raise ProviderFailure(category, last_error.status)
+            if last_error.status == 429:
+                self._cooldown_until = time.monotonic() + (last_error.retry_after or DEFAULT_COOLDOWN_SECONDS)
+        raise ProviderFailure(category, last_error.status, last_error.retry_after)
 
     def generate(self, question: str, language: str, evidence: list[dict[str, str]]) -> GeneratedAnswer:
         language_name = "Tamil" if language == "ta" else "English"

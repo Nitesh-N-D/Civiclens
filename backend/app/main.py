@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .changes import CHANGES, public_change
 from .config import settings
@@ -17,6 +18,35 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "Authorization"],
 )
+
+# TD-08: requests are small JSON documents; reject anything far larger before parsing.
+MAX_BODY_BYTES = 16_384
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Cross-Origin-Resource-Policy": "same-origin",
+}
+# The API serves JSON only; the interactive docs page needs its own scripts, so it is exempt.
+API_CSP = "default-src 'none'; frame-ancestors 'none'"
+DOCS_PATHS = ("/api/docs", "/api/openapi.json")
+
+
+@app.middleware("http")
+async def guard_requests(request: Request, call_next):
+    length = request.headers.get("content-length")
+    if length is not None and (not length.isdigit() or int(length) > MAX_BODY_BYTES):
+        return JSONResponse({"detail": "Request too large"}, status_code=413)
+    response = await call_next(request)
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    if not request.url.path.startswith(DOCS_PATHS):
+        response.headers.setdefault("Content-Security-Policy", API_CSP)
+    if request.url.path == "/api/ask":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
 
 provider = GeminiProvider()
 budget = RequestBudget()

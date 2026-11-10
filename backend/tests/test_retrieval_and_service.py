@@ -2,8 +2,8 @@ import unittest
 from dataclasses import replace
 from unittest.mock import patch
 
-from app.gemini import GeminiProvider, ProviderFailure
 from app.corpus import public_schemes
+from app.gemini import GeminiProvider, ProviderFailure
 from app.retrieval import lexical_scores, retrieve
 from app.security import valid_bearer_token
 from app.service import (
@@ -199,6 +199,31 @@ class RetrievalTests(unittest.TestCase):
         )
         self.assertEqual(response.mode, "search")
 
+    def test_claims_with_amounts_or_words_absent_from_evidence_are_dropped(self):
+        from app.models import AnswerClaim, GeneratedAnswer
+
+        provider = FakeProvider(GeneratedAnswer(claims=[
+            AnswerClaim(text="Social security pensions are Rs 1,200 a month from August 2023.",
+                        citation_ids=["cra-social-security-overview"]),
+            AnswerClaim(text="The old age pension is Rs 3,000 a month.",
+                        citation_ids=["cra-social-security-overview"]),
+            AnswerClaim(text="Cricket coaching camps run every summer.",
+                        citation_ids=["cra-social-security-overview"]),
+        ]))
+        response = answer_question("old age pension amount", "en", provider, RequestBudget(), 10, 100)
+        self.assertEqual(response.mode, "ai")
+        self.assertIn("1,200", response.text)
+        self.assertNotIn("3,000", response.text)
+        self.assertNotIn("Cricket", response.text)
+
+    def test_answer_with_only_unsupported_claims_abstains(self):
+        from app.models import AnswerClaim, GeneratedAnswer
+
+        provider = FakeProvider(GeneratedAnswer(claims=[AnswerClaim(
+            text="Every student receives Rs 50,000.", citation_ids=["myscheme-pudhumai-penn"])]))
+        response = answer_question("Pudhumai Penn college support", "en", provider, RequestBudget(), 10, 100)
+        self.assertEqual(response.mode, "search")
+
     def test_provider_failure_falls_back_to_cited_search(self):
         provider = FakeProvider(ProviderFailure("quota", 429))
         response = answer_question(
@@ -240,6 +265,32 @@ class RetrievalTests(unittest.TestCase):
                 provider._call("test:model", {})
         self.assertEqual(request.call_count, 1)
         self.assertEqual(provider.public_status["key_health"][0]["status"], "quota_limited")
+
+
+    def test_quota_error_starts_cooldown_without_further_network_calls(self):
+        provider = GeminiProvider()
+        provider._keys = ("primary-secret",)
+        provider._key_health = ["configured"]
+        with patch.object(GeminiProvider, "_request", side_effect=ProviderFailure("http", 429, 30.0)) as request:
+            with self.assertRaises(ProviderFailure):
+                provider._call("test:model", {})
+            with self.assertRaises(ProviderFailure) as again:
+                provider._call("test:model", {})
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(again.exception.status, 429)
+        self.assertEqual(provider.public_status["state"], "RATE_LIMITED")
+
+    def test_health_state_vocabulary(self):
+        provider = GeminiProvider()
+        provider._keys = ()
+        self.assertEqual(provider.public_status["state"], "CONFIGURATION_ERROR")
+        provider._keys = ("primary-secret", "secondary-secret")
+        provider._key_health = ["configured", "configured"]
+        self.assertEqual(provider.public_status["state"], "HEALTHY")
+        provider._key_health = ["credential_error", "healthy"]
+        self.assertEqual(provider.public_status["state"], "DEGRADED")
+        provider._last_failure = "provider_unavailable"
+        self.assertEqual(provider.public_status["state"], "UNAVAILABLE")
 
 
 if __name__ == "__main__":

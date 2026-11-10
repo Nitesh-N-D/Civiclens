@@ -1,12 +1,13 @@
 import re
-from datetime import datetime, timedelta, timezone
+import unicodedata
+from datetime import UTC, datetime, timedelta
 from threading import Lock
 
 from .changes import matching_changes, public_change
 from .corpus import public_source
 from .gemini import GeminiProvider, ProviderFailure
 from .models import AskResponse, ChangeNotice, Citation
-from .retrieval import retrieve
+from .retrieval import _matches, query_tokens, retrieve, tokens
 
 # Identifiers and secrets are refused before retrieval or generation. Situational
 # context ("I am a student", "நான் கல்லூரியில் படிக்கிறேன்", "I am 67") is the core
@@ -68,15 +69,40 @@ TA_NO_EVIDENCE = (
 )
 
 
+# TD-07: a cheap claim-to-evidence gate. Not entailment, but it rejects the most harmful
+# failure (an amount, age or date that is not in the cited source) and claims that share
+# almost no content words with what they cite.
+DIGIT_RUN = re.compile(r"\d+")
+MIN_CLAIM_OVERLAP = 0.25
+
+
+def _numbers(text: str) -> set[str]:
+    ascii_digits = "".join(str(unicodedata.digit(ch)) if ch.isdigit() else ch for ch in text)
+    joined = re.sub(r"(?<=\d),(?=\d)", "", ascii_digits)  # 1,200 -> 1200
+    return {run.lstrip("0") or "0" for run in DIGIT_RUN.findall(joined)}
+
+
+def claim_is_supported(claim: str, evidence_texts: list[str]) -> bool:
+    evidence = " ".join(evidence_texts)
+    if not _numbers(claim) <= _numbers(evidence):
+        return False
+    claim_tokens = set(query_tokens(claim))
+    if not claim_tokens:
+        return False
+    evidence_tokens = set(tokens(evidence))
+    supported = sum(any(_matches(token, other) for other in evidence_tokens) for token in claim_tokens)
+    return supported / len(claim_tokens) >= MIN_CLAIM_OVERLAP
+
+
 class RequestBudget:
     def __init__(self) -> None:
         self._lock = Lock()
         self._minute: list[datetime] = []
-        self._day = datetime.now(timezone.utc).date()
+        self._day = datetime.now(UTC).date()
         self._daily = 0
 
     def allow(self, per_minute: int, per_day: int) -> bool:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         cutoff = now - timedelta(minutes=1)
         with self._lock:
             self._minute = [stamp for stamp in self._minute if stamp > cutoff]
@@ -133,7 +159,7 @@ class AnswerCache:
         return (" ".join(question.casefold().split()), language)
 
     def get(self, question: str, language: str) -> AskResponse | None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         with self._lock:
             entry = self._entries.get(self.key(question, language))
             if not entry or entry[0] < now:
@@ -141,7 +167,7 @@ class AnswerCache:
             return entry[1]
 
     def put(self, question: str, language: str, response: AskResponse) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         with self._lock:
             if len(self._entries) >= self._max:
                 self._entries = {k: v for k, v in self._entries.items() if v[0] >= now}
@@ -219,11 +245,14 @@ def _answer(question: str, language: str, provider: GeminiProvider, budget: Requ
     if generated.unable_to_answer or not generated.claims:
         return AskResponse(text=no_evidence, citations=citations, mode="search", warning=warning)
     valid_ids = {source.id for source, _score in hits}
+    evidence_by_id = {source.id: (source.title, source.text_en, source.text_ta) for source, _score in hits}
     used_ids: set[str] = set()
     valid_claims = []
     for claim in generated.claims:
         claim_ids = [item for item in claim.citation_ids if item in valid_ids]
-        if claim.text.strip() and claim_ids and len(claim.text) <= 700:
+        cited_text = [part for item in claim_ids for part in evidence_by_id[item]]
+        if (claim.text.strip() and claim_ids and len(claim.text) <= 700
+                and claim_is_supported(claim.text, cited_text)):
             valid_claims.append(claim.text.strip())
             used_ids.update(claim_ids)
     if not valid_claims:
