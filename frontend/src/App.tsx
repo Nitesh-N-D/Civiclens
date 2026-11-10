@@ -51,6 +51,7 @@ const copy = {
     aiMode: "AI explanation",
     clear: "Start over",
     noAnswer: "I couldn’t find enough reviewed information to answer that safely. Try an official source below or ask a narrower question.",
+    rateLimited: "You’ve asked several questions quickly. Please wait a minute and try again — this keeps the free service available for everyone.",
   },
   ta: {
     eyebrow: "அரசுச் சேவைகள் — எளிய விளக்கம்",
@@ -94,6 +95,7 @@ const copy = {
     aiMode: "AI விளக்கம்",
     clear: "புதிதாகத் தொடங்குங்கள்",
     noAnswer: "பாதுகாப்பாகப் பதிலளிக்கத் தேவையான சரிபார்க்கப்பட்ட தகவல் கிடைக்கவில்லை. கீழே உள்ள அதிகாரப்பூர்வ ஆதாரத்தைப் பார்க்கவும் அல்லது குறிப்பான கேள்வியைக் கேட்கவும்.",
+    rateLimited: "குறுகிய நேரத்தில் பல கேள்விகள் கேட்கப்பட்டன. ஒரு நிமிடம் கழித்து மீண்டும் முயற்சிக்கவும் — இதனால் இலவச சேவை அனைவருக்கும் கிடைக்கும்.",
   },
 } satisfies Record<Language, Record<string, string | string[]>>;
 
@@ -196,6 +198,14 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: value, language }),
       });
+      if (response.status === 429) {
+        setTurns((items) => {
+          const next = [...items];
+          next[next.length - 1] = { question: value, answer: { text: t.rateLimited as string, citations: [], mode: "search", warning: t.disclaimer as string } };
+          return next;
+        });
+        return;
+      }
       const result = await response.json();
       if (!response.ok) throw new Error(result.detail || "Request failed");
       setTurns((items) => {
@@ -210,7 +220,7 @@ function App() {
         const next = [...items];
         next[next.length - 1] = {
           question: value,
-          answer: { text: t.noAnswer as string, citations: sources, mode: "search", warning: t.disclaimer as string },
+          answer: { text: t.noAnswer as string, citations: [], mode: "search", warning: t.disclaimer as string },
         };
         return next;
       });
