@@ -1,103 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { copy } from "./copy";
+import type { Language } from "./copy";
+import { ChangeList, ChangeNotices } from "./ChangeNotices";
+import type { Answer, Change, Citation, Turn } from "./types";
+import { PrintChecklist } from "./PrintChecklist";
 
-type Language = "en" | "ta";
-type Citation = { id: string; title: string; url: string; owner: string; locator?: string; status: string; desk_checked_at?: string; human_verified_at?: string | null };
-type Answer = { text: string; citations: Citation[]; mode: "ai" | "search"; warning?: string };
-type Turn = { question: string; answer: Answer };
 type SchemeCard = { id: string; title: string; department: string; category: string; overview: string; url: string; source_id: string; status: string; eligibility_enabled: boolean };
 type AdminOverview = { sources: Citation[]; source_count: number; human_verified_count: number; review_pending_count: number; provider: { configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null }; monitoring: string; mutations_enabled: boolean };
 
-const copy = {
-  en: {
-    eyebrow: "PUBLIC SERVICES, MADE CLEARER",
-    headline: "A clearer path to\npublic services.",
-    intro: "Understand schemes and services in plain language, with official sources close at hand.",
-    placeholder: "Ask about a scheme, service, or next step…",
-    ask: "Ask CivicLens",
-    prompt: "Try asking",
-    prompts: ["I’m starting college. What support can I explore?", "How do I apply for an income certificate?", "What should I know about old-age pension schemes?"],
-    trust: "Answers are grounded in official sources",
-    trustSub: "Check the source and date before you act.",
-    pilot: "Tamil Nadu pilot",
-    notGov: "Independent information service · Not a government website",
-    sources: "Official sources",
-    sourceIntro: "Start with verified government portals and scheme directories.",
-    sourceCount: "SOURCE LIBRARY",
-    explore: "Explore a starting point",
-    exploreIntro: "Browse programs listed in official scheme directories.",
-    unverified: "Rules not verified",
-    openDirectory: "Open official directory",
-    maintainer: "Maintainer overview",
-    adminToken: "Maintainer token",
-    loadOverview: "Open overview",
-    closeOverview: "Close",
-    pendingReview: "Need human review",
-    verified: "Human verified",
-    monitoringOff: "Automatic source monitoring is not configured.",
-    readOnly: "Read-only view · no content changes are made here.",
-    adminError: "Could not open the overview. Check the token and try again.",
-    clearToken: "Clear token",
-    sourceEmpty: "Source library is loading…",
-    askAgain: "Ask another question",
-    evidence: "Evidence & links",
-    answerLabel: "CIVICLENS EXPLAINED",
-    loading: "Looking through the available official information…",
-    privacy: "Don’t enter personal identifiers, sensitive details, or private documents. If Gemini is enabled, your general question is sent to Google; unpaid-tier content may be used to improve products. CivicLens does not store chats.",
-    providerTerms: "Gemini data terms",
-    disclaimer: "Information aid only. Scheme rules can change; confirm details with the responsible department before applying. Tamil wording has not had specialist review.",
-    sourceStatus: "Directory source",
-    searchMode: "Source search",
-    aiMode: "AI explanation",
-    clear: "Start over",
-    noAnswer: "I couldn’t find enough reviewed information to answer that safely. Try an official source below or ask a narrower question.",
-    rateLimited: "You’ve asked several questions quickly. Please wait a minute and try again — this keeps the free service available for everyone.",
-  },
-  ta: {
-    eyebrow: "அரசுச் சேவைகள் — எளிய விளக்கம்",
-    headline: "அரசுச் சேவைகளை\nஎளிதாகப் புரிந்துகொள்ளுங்கள்.",
-    intro: "திட்டங்களையும் சேவைகளையும் எளிய மொழியில் அறிந்து, அதிகாரப்பூர்வ ஆதாரங்களுடன் அடுத்த படியைத் தெரிந்துகொள்ளுங்கள்.",
-    placeholder: "திட்டம், சேவை அல்லது அடுத்த படி பற்றி கேளுங்கள்…",
-    ask: "CivicLens-இடம் கேளுங்கள்",
-    prompt: "இவற்றில் கேளுங்கள்",
-    prompts: ["கல்லூரி சேரும் எனக்கு என்ன உதவிகள் உள்ளன?", "வருமானச் சான்றிதழுக்கு எப்படி விண்ணப்பிப்பது?", "முதியோர் ஓய்வூதியத் திட்டங்கள் பற்றி சொல்லுங்கள்"],
-    trust: "அதிகாரப்பூர்வ ஆதாரங்களை அடிப்படையாகக் கொண்ட பதில்கள்",
-    trustSub: "செயல்படுவதற்கு முன் ஆதாரத்தையும் தேதியையும் சரிபார்க்கவும்.",
-    pilot: "தமிழ்நாடு முன்னோட்டம்",
-    notGov: "சுயாதீன தகவல் சேவை · அரசு இணையதளம் அல்ல",
-    sources: "அதிகாரப்பூர்வ ஆதாரங்கள்",
-    sourceIntro: "அரசுத் தளங்கள் மற்றும் திட்டத் தகவல்களிலிருந்து தொடங்குங்கள்.",
-    sourceCount: "ஆதாரத் தொகுப்பு",
-    explore: "இங்கே தொடங்கலாம்",
-    exploreIntro: "அதிகாரப்பூர்வத் திட்டக் கோப்பகங்களில் உள்ள திட்டங்களைப் பாருங்கள்.",
-    unverified: "விதிகள் சரிபார்க்கப்படவில்லை",
-    openDirectory: "அதிகாரப்பூர்வக் கோப்பகத்தைத் திறக்கவும்",
-    maintainer: "பராமரிப்பாளர் நிலை",
-    adminToken: "பராமரிப்பாளர் குறியீடு",
-    loadOverview: "நிலையைத் திறக்கவும்",
-    closeOverview: "மூடவும்",
-    pendingReview: "மனிதர் ஆய்வு தேவை",
-    verified: "மனிதர் சரிபார்த்தது",
-    monitoringOff: "தானியங்கி ஆதாரக் கண்காணிப்பு அமைக்கப்படவில்லை.",
-    readOnly: "பார்வைக்கு மட்டும் · இங்கே உள்ளடக்கம் மாற்றப்படாது.",
-    adminError: "நிலையைத் திறக்க முடியவில்லை. குறியீட்டைச் சரிபார்த்து மீண்டும் முயலுங்கள்.",
-    clearToken: "குறியீட்டை நீக்கவும்",
-    sourceEmpty: "ஆதாரத் தொகுப்பு ஏற்றப்படுகிறது…",
-    askAgain: "மற்றொரு கேள்வி கேளுங்கள்",
-    evidence: "ஆதாரங்கள் மற்றும் இணைப்புகள்",
-    answerLabel: "CIVICLENS விளக்கம்",
-    loading: "கிடைக்கும் அதிகாரப்பூர்வ தகவல்களைத் தேடுகிறோம்…",
-    privacy: "தனிப்பட்ட அடையாளம், ரகசிய விவரம் அல்லது தனிப்பட்ட ஆவணங்களை உள்ளிட வேண்டாம். Gemini இயக்கப்பட்டால், பொதுவான கேள்வி Google-க்கு அனுப்பப்படும்; இலவச சேவை உள்ளீடுகள் தயாரிப்பு மேம்பாட்டிற்குப் பயன்படுத்தப்படலாம். CivicLens உரையாடல்களைச் சேமிக்காது.",
-    providerTerms: "Gemini தரவு விதிகள்",
-    disclaimer: "தகவல் உதவி மட்டுமே. திட்ட விதிகள் மாறலாம்; விண்ணப்பிக்கும் முன் துறையிடம் உறுதிப்படுத்தவும். தமிழ் விளக்கத்தை நிபுணர் சான்றாய்வு செய்யவில்லை.",
-    sourceStatus: "திட்டத் தகவல் ஆதாரம்",
-    searchMode: "ஆதாரத் தேடல்",
-    aiMode: "AI விளக்கம்",
-    clear: "புதிதாகத் தொடங்குங்கள்",
-    noAnswer: "பாதுகாப்பாகப் பதிலளிக்கத் தேவையான சரிபார்க்கப்பட்ட தகவல் கிடைக்கவில்லை. கீழே உள்ள அதிகாரப்பூர்வ ஆதாரத்தைப் பார்க்கவும் அல்லது குறிப்பான கேள்வியைக் கேட்கவும்.",
-    rateLimited: "குறுகிய நேரத்தில் பல கேள்விகள் கேட்கப்பட்டன. ஒரு நிமிடம் கழித்து மீண்டும் முயற்சிக்கவும் — இதனால் இலவச சேவை அனைவருக்கும் கிடைக்கும்.",
-  },
-} satisfies Record<Language, Record<string, string | string[]>>;
+
 
 const suggestions = [
   { icon: "✦", tone: "lavender", key: 0 },
@@ -125,6 +37,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<Citation[]>([]);
   const [schemes, setSchemes] = useState<SchemeCard[]>([]);
+  const [changes, setChanges] = useState<Change[]>([]);
   const [adminEnabled, setAdminEnabled] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [adminToken, setAdminToken] = useState("");
@@ -182,6 +95,10 @@ function App() {
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: { schemes: SchemeCard[] }) => setSchemes(data.schemes ?? []))
       .catch(() => setSchemes([]));
+    fetch(`/api/changes?language=${language}`)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: { changes: Change[] }) => setChanges(data.changes ?? []))
+      .catch(() => setChanges([]));
   }, [language]);
 
   async function submitQuestion(event?: FormEvent, preset?: string) {
@@ -343,13 +260,16 @@ function App() {
                 <p className="answer-text">{loading ? t.loading : currentTurn.answer.text}</p>
                 {loading && <div className="loading-lines"><i /><i /><i /></div>}
                 {!!currentTurn.answer.warning && !loading && <div className="answer-warning"><span>i</span>{currentTurn.answer.warning}</div>}
+                {!loading && !!currentTurn.answer.notices?.length && <ChangeNotices notices={currentTurn.answer.notices} t={t} />}
                 {!loading && !!currentTurn.answer.citations.length && <div className="citations-block">
                   <div className="citation-title">{t.evidence}</div>
                   <div className="citation-list">{currentTurn.answer.citations.map((citation) => <a className="citation-card" href={citation.url} key={citation.id} target="_blank" rel="noreferrer">
                     <span className="citation-number">↗</span><span className="citation-copy"><b>{citation.title}</b><small>{citation.owner}{citation.locator ? ` · ${citation.locator}` : ""}{citation.desk_checked_at ? ` · ${language === "ta" ? "மேசை ஆய்வு" : "Desk review"} ${citation.desk_checked_at}` : ""}</small></span><span className="citation-status">{citation.human_verified_at ? (language === "ta" ? `மனிதர் சரிபார்த்தது ${citation.human_verified_at}` : `Human checked ${citation.human_verified_at}`) : (language === "ta" ? "அதிகாரப்பூர்வ ஆதாரம் · விதிகள் சரிபார்க்கப்படவில்லை" : citation.status || t.sourceStatus)}</span>
                   </a>)}</div>
                 </div>}
+                {!loading && (!!currentTurn.answer.citations.length || !!currentTurn.answer.notices?.length) && <button className="text-button print-button" onClick={() => window.print()}>{t.print} <span>⎙</span></button>}
               </article>}
+              {currentTurn && !loading && <PrintChecklist turn={currentTurn} t={t} />}
               <form className="followup-box" onSubmit={(event) => submitQuestion(event)}>
                 <textarea rows={1} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={t.askAgain as string} aria-label={t.askAgain as string} />
                 <button type="submit" disabled={loading || !question.trim()} aria-label={t.ask as string}>↗</button>
@@ -369,6 +289,7 @@ function App() {
               </article>)}
             </div>
           </section>}
+          {!turns.length && !!changes.length && <ChangeList changes={changes} t={t} />}
         </section>
 
         <footer className="page-footer"><div className="footer-brand"><BrandMark /><span>CivicLens</span></div><p>{t.disclaimer}</p><a href="https://www.myscheme.gov.in/" target="_blank" rel="noreferrer">{language === "en" ? "Visit myScheme" : "myScheme-ஐப் பார்க்கவும்"} ↗</a></footer>
