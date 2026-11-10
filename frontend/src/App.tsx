@@ -33,7 +33,20 @@ function BrandMark() {
   );
 }
 
+type Theme = "light" | "dark";
+
+function initialTheme(): Theme {
+  try {
+    const saved = localStorage.getItem("civiclens-theme");
+    if (saved === "light" || saved === "dark") return saved;
+  } catch {
+    // Storage may be blocked; fall back to the system preference.
+  }
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 function App() {
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const [language, setLanguage] = useState<Language>("ta");
   const [question, setQuestion] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -156,6 +169,20 @@ function App() {
     inputRef.current?.focus();
   }
 
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#141c17" : "#f8faf8");
+    try {
+      localStorage.setItem("civiclens-theme", theme);
+    } catch {
+      // Preference simply is not remembered.
+    }
+  }, [theme]);
+
+  const themeLabel = theme === "dark"
+    ? (language === "en" ? "Switch to light mode" : "வெளிர் நிறத்துக்கு மாற்று")
+    : (language === "en" ? "Switch to dark mode" : "இருண்ட நிறத்துக்கு மாற்று");
+
   return (
     <div className="app-shell" lang={language}>
       <header className="topbar">
@@ -169,6 +196,10 @@ function App() {
             <button className={language === "en" ? "selected" : ""} onClick={() => setLanguage("en")} aria-pressed={language === "en"}>EN</button>
             <button className={language === "ta" ? "selected" : ""} onClick={() => setLanguage("ta")} aria-pressed={language === "ta"}>தமிழ்</button>
           </div>
+          <button type="button" className="theme-toggle" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={themeLabel} title={themeLabel}>
+            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+          </button>
         </div>
       </header>
 
