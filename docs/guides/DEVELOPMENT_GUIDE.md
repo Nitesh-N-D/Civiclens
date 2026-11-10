@@ -24,7 +24,8 @@ Use the review lifecycle in `docs/research/PRODUCT_REQUIREMENTS.md`. A maintaine
 
 - API routes are under `/api`.
 - Response errors do not contain provider messages, credentials, or tracebacks.
-- `GET /api/health` reports coarse configuration health only.
+- `GET /api/health` reports coarse configuration health only, including `provider.state` (`HEALTHY`, `DEGRADED`, `RATE_LIMITED`, `UNAVAILABLE`, `CONFIGURATION_ERROR`).
+- Lint the backend with `pip install -r requirements-dev.txt` then `python -m ruff check .` (also run in CI).
 - `GET /api/sources` returns public source metadata.
 - `POST /api/ask` takes `{ "question": "...", "language": "en" | "ta" }` and returns an answer mode, cited sources, a caveat, and `notices` (scheme change notices labelled `official` or `reported`).
 - `GET /api/changes?language=en|ta` lists tracked scheme changes. Add new ones in `backend/app/changes.py` with the evidence type, source URL and check date.

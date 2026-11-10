@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-10 — Phase 4: hardening
+
+- **Provider health (TD-06):** `/api/health` and the maintainer overview report `HEALTHY`, `DEGRADED`, `RATE_LIMITED`, `UNAVAILABLE` or `CONFIGURATION_ERROR`. After a Gemini 429 the backend stops calling Gemini for the server's `Retry-After` (default 60 s, max 10 min) and answers in cited search mode.
+- **Claim–evidence gate (TD-07):** each generated claim must use only numbers that appear in the sources it cites (so an invented amount, age or date is dropped) and share at least a quarter of its content words with them. Answers left with no supported claim fall back to search mode. This is a heuristic, not entailment.
+- **Request hardening (TD-08):** request bodies over 16 KB get 413; responses carry `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, a JSON-only CSP (docs page exempt) and `Cache-Control: no-store` on answers. Handlers are sync, so FastAPI already runs Gemini calls in its thread pool.
+- **Lint (TD-12):** ruff (`backend/ruff.toml`, dev-only `requirements-dev.txt`) runs in CI.
+- Tests: 34 unit tests.
+
 ## 2026-11-10 — Phase 3: source freshness, change tracking, helper checklist
 
 - **Freshness re-check (TD-04):** every source re-checked against 2026 information on 10 Nov 2026. The CRA pension record now states the rates the official page gives (Rs 1,500 disability pension from 1 Jan 2023; Rs 1,200 for the others from Aug 2023), labelled as dated. Pudhumai Penn and the Free Education Scheme gained alternate names (Puthumai Penn, Moovalur Ramamirtham Ammaiyar, FES) as search keywords. The BC/MBC department page could not be fetched (its TLS certificate does not verify), so the Free Education record stays a directory lead.

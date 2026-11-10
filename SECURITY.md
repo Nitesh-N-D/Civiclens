@@ -13,6 +13,8 @@
 - CORS allows only the configured local origins by default; local servers bind to loopback.
 - The optional maintainer overview is disabled without `CIVICLENS_ADMIN_TOKEN`, read-only, and compares a bearer token without returning it. The client keeps the entered token in memory only.
 - Scheme change notices are separate from answer evidence and say whether they come from an official page or a news report. The printable checklist contains only the general question, the cited answer and public links.
+- Request bodies over 16 KB are refused (413). API responses send `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, a JSON-only Content-Security-Policy and `Cache-Control: no-store` on answers.
+- Generated claims whose numbers do not appear in the cited source, or which share almost no words with it, are dropped before display.
 - No production credentials, real citizen data, or deployment are configured.
 
 ## Important limits
