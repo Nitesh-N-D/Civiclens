@@ -7,21 +7,36 @@ from .gemini import GeminiProvider, ProviderFailure
 from .models import AskResponse, Citation
 from .retrieval import retrieve
 
+# Identifiers and secrets are refused before retrieval or generation. Situational
+# context ("I am a student", "நான் கல்லூரியில் படிக்கிறேன்", "I am 67") is the core
+# use case and is allowed (TD-01); it only triggers an extra privacy reminder.
 SENSITIVE_PATTERNS = (
-    re.compile(r"\b(?:aadhaar|aadhar|uidai|pan card|passport|voter id|account number|ifsc|otp|password)\b", re.I),
-    re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b", re.I),
-    re.compile(r"\b\d{12}\b"),
-    re.compile(r"\b(?:\+?91[\s-]?)?[6-9]\d{9}\b"),
-    re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b", re.I),
-    re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Z]{2,}\b", re.I),
-    re.compile(r"\b(?:my|our)\s+(?:age|income|bank|account|aadhaar|aadhar|phone|address|disability|caste|community)\b", re.I),
-    re.compile(r"\bI\s+am\s+(?:\d{1,3}|a\s+widow|disabled|pregnant)\b", re.I),
-    re.compile(r"\b(?:I am|I'm|my age is)\s+(?:a\s+)?\d{1,3}\b", re.I),
-    re.compile(r"(?:என் வயது|எனக்கு வயது)\s*[:=]?\s*[\d௦-௯]{1,3}"),
-    re.compile(r"(?:என் ஆதார்|ஆதார் எண்|வங்கி கணக்கு எண்|என் வங்கிக் கணக்கு)"),
-    re.compile(r"\b(?:I am|I'm)\s+(?:a\s+)?(?:student|farmer|widow|senior citizen|person with a disability)\b", re.I),
-    re.compile(r"\bmy\s+(?:caste|community|disability|income|household|family)\b", re.I),
-    re.compile(r"(?:நான்|என் குடும்பம்|எனது குடும்பம்|எங்கள் குடும்பம்)"),
+    re.compile(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"),                      # Aadhaar-shaped number
+    re.compile(r"\b\d{9,18}\b"),                                          # account/ID-length digit run
+    re.compile(r"[௦-௯]{9,}"),                                               # same, in Tamil numerals
+    re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b", re.I),                        # PAN
+    re.compile(r"(?<!\d)(?:\+?91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}\b"),               # Indian mobile
+    re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b", re.I),                          # IFSC
+    re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Z]{2,}\b", re.I),                   # email
+    re.compile(
+        r"\b(?:my|our)\s+(?:aadhaar|aadhar|uid|pan|passport|voter\s*id|ration\s*card|bank|account|ifsc|upi|otp|"
+        r"password|pin|phone|mobile|address)\s*(?:number|no\.?|id|details?)?\s*(?:is|=|:)",
+        re.I,
+    ),
+    re.compile(r"\b(?:otp|password|passcode|pin)\s*(?:is|=|:)\s*\S+", re.I),
+    re.compile(r"(?:என்|எனது|எங்கள்)\s*(?:ஆதார்|வங்கி|கணக்கு|கைபேசி|தொலைபேசி|முகவரி|கடவுச்சொல்)"),
+    re.compile(r"(?:ஆதார்\s*எண்|கணக்கு\s*எண்|ஓடிபி|OTP)\s*[:=]?\s*[\d௦-௯]"),
+)
+
+PERSONAL_CONTEXT_PATTERNS = (
+    re.compile(r"\b(?:I\s+am|I'm|my|our|we\s+are)\b", re.I),
+    re.compile(r"(?:நான்|என்|எனது|எனக்கு|எங்கள்|எங்களுக்கு)"),
+)
+CONTEXT_NOTE = (
+    " You don’t need to share personal details: questions may be processed by Google’s Gemini free tier."
+)
+TA_CONTEXT_NOTE = (
+    " தனிப்பட்ட விவரங்களைப் பகிரத் தேவையில்லை: கேள்விகள் Google Gemini இலவச சேவையால் செயலாக்கப்படலாம்."
 )
 
 WARNING = (
@@ -74,8 +89,64 @@ class RequestBudget:
             return True
 
 
+class ClientLimiter:
+    """Per-client sliding limits so one visitor cannot drain the shared free-tier quota."""
+
+    def __init__(self, max_clients: int = 5000) -> None:
+        self._lock = Lock()
+        self._clients: dict[str, RequestBudget] = {}
+        self._max_clients = max_clients
+
+    def allow(self, client: str, per_minute: int, per_day: int) -> bool:
+        with self._lock:
+            budget = self._clients.get(client)
+            if budget is None:
+                if len(self._clients) >= self._max_clients:
+                    self._clients.clear()  # bounded memory; resets are acceptable for a pilot
+                budget = self._clients[client] = RequestBudget()
+        return budget.allow(per_minute, per_day)
+
+
 def contains_sensitive_details(text: str) -> bool:
     return any(pattern.search(text) for pattern in SENSITIVE_PATTERNS)
+
+
+def mentions_personal_context(text: str) -> bool:
+    return any(pattern.search(text) for pattern in PERSONAL_CONTEXT_PATTERNS)
+
+
+class AnswerCache:
+    """Small in-memory TTL cache for AI answers, to conserve the shared free-tier quota.
+
+    Keys are normalised public questions; nothing is written to disk.
+    """
+
+    def __init__(self, max_entries: int = 256, ttl: timedelta = timedelta(hours=12)) -> None:
+        self._lock = Lock()
+        self._entries: dict[tuple[str, str], tuple[datetime, AskResponse]] = {}
+        self._max = max_entries
+        self._ttl = ttl
+
+    @staticmethod
+    def key(question: str, language: str) -> tuple[str, str]:
+        return (" ".join(question.casefold().split()), language)
+
+    def get(self, question: str, language: str) -> AskResponse | None:
+        now = datetime.now(timezone.utc)
+        with self._lock:
+            entry = self._entries.get(self.key(question, language))
+            if not entry or entry[0] < now:
+                return None
+            return entry[1]
+
+    def put(self, question: str, language: str, response: AskResponse) -> None:
+        now = datetime.now(timezone.utc)
+        with self._lock:
+            if len(self._entries) >= self._max:
+                self._entries = {k: v for k, v in self._entries.items() if v[0] >= now}
+                while len(self._entries) >= self._max:
+                    self._entries.pop(next(iter(self._entries)))
+            self._entries[self.key(question, language)] = (now + self._ttl, response)
 
 
 def _citations(hits: list[tuple[object, float]]) -> list[Citation]:
@@ -87,8 +158,10 @@ def _citations(hits: list[tuple[object, float]]) -> list[Citation]:
 
 
 def answer_question(question: str, language: str, provider: GeminiProvider, budget: RequestBudget,
-                    per_minute: int, per_day: int) -> AskResponse:
+                    per_minute: int, per_day: int, cache: AnswerCache | None = None) -> AskResponse:
     warning = TA_WARNING if language == "ta" else WARNING
+    if mentions_personal_context(question):
+        warning += TA_CONTEXT_NOTE if language == "ta" else CONTEXT_NOTE
     privacy_response = TA_PRIVACY_RESPONSE if language == "ta" else PRIVACY_RESPONSE
     no_evidence = TA_NO_EVIDENCE if language == "ta" else NO_EVIDENCE
     if contains_sensitive_details(question):
@@ -99,6 +172,10 @@ def answer_question(question: str, language: str, provider: GeminiProvider, budg
         return AskResponse(text=no_evidence, citations=[], mode="search", warning=warning)
     if not provider.available:
         return AskResponse(text=no_evidence, citations=citations, mode="search", warning=warning)
+    if cache is not None:
+        cached = cache.get(question, language)
+        if cached is not None:
+            return cached.model_copy(update={"warning": warning})
     if not budget.allow(per_minute, per_day):
         return AskResponse(text=no_evidence, citations=citations, mode="search", warning=warning)
 
@@ -141,9 +218,12 @@ def answer_question(question: str, language: str, provider: GeminiProvider, budg
     if not valid_claims:
         return AskResponse(text=no_evidence, citations=citations, mode="search", warning=warning)
     verified_citations = [citation for citation in citations if citation.id in used_ids]
-    return AskResponse(
+    response = AskResponse(
         text="\n\n".join(valid_claims),
         citations=verified_citations,
         mode="ai",
         warning=warning,
     )
+    if cache is not None:
+        cache.put(question, language, response)
+    return response

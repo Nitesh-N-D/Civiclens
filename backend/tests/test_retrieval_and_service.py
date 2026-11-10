@@ -1,11 +1,18 @@
 import unittest
+from dataclasses import replace
 from unittest.mock import patch
 
 from app.gemini import GeminiProvider, ProviderFailure
 from app.corpus import public_schemes
 from app.retrieval import lexical_scores, retrieve
 from app.security import valid_bearer_token
-from app.service import RequestBudget, answer_question, contains_sensitive_details
+from app.service import (
+    AnswerCache,
+    ClientLimiter,
+    RequestBudget,
+    answer_question,
+    contains_sensitive_details,
+)
 
 
 class NoProvider:
@@ -66,8 +73,13 @@ class RetrievalTests(unittest.TestCase):
     def test_privacy_filter_blocks_identifiers_before_retrieval_or_generation(self):
         for question in (
             "My Aadhaar number is 123456789012",
-            "My age is 62 and I need a pension",
-            "என் வயது 62, முதியோர் உதவி என்ன?",
+            "my aadhaar is 1234 5678 9012",
+            "Call me on 9876543210 about pensions",
+            "my bank account number: 50100234567890",
+            "OTP is 482913, is this scheme real?",
+            "PAN ABCDE1234F for scholarship",
+            "என் ஆதார் எண் 123456789012",
+            "mail me at someone@example.com",
         ):
             with self.subTest(question=question):
                 self.assertTrue(contains_sensitive_details(question))
@@ -76,6 +88,84 @@ class RetrievalTests(unittest.TestCase):
                 self.assertEqual(response.mode, "search")
                 self.assertEqual(response.citations, [])
                 self.assertEqual(provider.generated, 0)
+
+    def test_situational_context_is_allowed_with_privacy_reminder(self):
+        # TD-01: the core use case is people describing their situation.
+        for question, expected in (
+            ("நான் கல்லூரியில் படிக்கிறேன், எனக்கு என்ன உதவித்தொகை கிடைக்கும்?", "myscheme-pudhumai-penn"),
+            ("I am a student, what scholarships can I get?", "myscheme-pudhumai-penn"),
+            ("I am 67 years old, any pension?", "cra-social-security-overview"),
+            ("My age is 62 and I need a pension", "cra-social-security-overview"),
+        ):
+            with self.subTest(question=question):
+                self.assertFalse(contains_sensitive_details(question))
+                response = answer_question(question, "en", NoProvider(), RequestBudget(), 10, 100)
+                self.assertTrue(response.citations)
+                self.assertEqual(response.citations[0].id, expected)
+                self.assertIn("personal details", response.warning)
+
+    def test_general_question_mentioning_an_id_type_is_not_blocked(self):
+        question = "Is Aadhaar needed for the old age pension?"
+        self.assertFalse(contains_sensitive_details(question))
+        response = answer_question(question, "en", NoProvider(), RequestBudget(), 10, 100)
+        self.assertEqual(response.citations[0].id, "cra-social-security-overview")
+        self.assertNotIn("personal details", response.warning)
+
+    def test_off_topic_questions_abstain_without_sources(self):
+        # TD-03: unrelated questions must not be answered with unrelated sources.
+        for question in (
+            "what is the weather in Chennai",
+            "Tamil Nadu bus timings",
+            "current government scheme for cricket",
+            "how do I get a passport renewal",
+        ):
+            with self.subTest(question=question):
+                self.assertEqual(retrieve(question, NoProvider()), [])
+                response = answer_question(question, "en", FakeProvider(), RequestBudget(), 10, 100)
+                self.assertEqual(response.citations, [])
+                self.assertEqual(response.mode, "search")
+
+    def test_ai_answers_are_cached_to_save_quota(self):
+        from app.models import AnswerClaim, GeneratedAnswer
+
+        provider = FakeProvider(GeneratedAnswer(claims=[AnswerClaim(
+            text="The directory has a scheme overview.", citation_ids=["myscheme-pudhumai-penn"],
+        )]))
+        cache = AnswerCache()
+        first = answer_question("Pudhumai Penn support", "en", provider, RequestBudget(), 10, 100, cache)
+        second = answer_question("  pudhumai penn   SUPPORT ", "en", provider, RequestBudget(), 10, 100, cache)
+        self.assertEqual(first.mode, "ai")
+        self.assertEqual(second.text, first.text)
+        self.assertEqual(provider.generated, 1)
+
+    def test_client_limiter_isolates_clients(self):
+        limiter = ClientLimiter()
+        self.assertTrue(limiter.allow("a", 2, 10))
+        self.assertTrue(limiter.allow("a", 2, 10))
+        self.assertFalse(limiter.allow("a", 2, 10))
+        self.assertTrue(limiter.allow("b", 2, 10))
+
+    def test_ask_endpoint_rate_limits_per_client_with_retry_after(self):
+        from fastapi import HTTPException
+        from starlette.requests import Request
+
+        from app import main
+        from app.models import AskRequest
+
+        def request_from(host: str) -> Request:
+            return Request({"type": "http", "headers": [], "client": (host, 1234)})
+
+        payload = AskRequest(question="Pudhumai Penn college support", language="en")
+        with patch.object(main, "client_limiter", ClientLimiter()), \
+                patch.object(main, "provider", NoProvider()), \
+                patch.object(main, "settings", replace(main.settings, client_requests_per_minute=2)):
+            main.ask(payload, request_from("10.0.0.1"))
+            main.ask(payload, request_from("10.0.0.1"))
+            with self.assertRaises(HTTPException) as raised:
+                main.ask(payload, request_from("10.0.0.1"))
+            self.assertEqual(raised.exception.status_code, 429)
+            self.assertEqual(raised.exception.headers["Retry-After"], "60")
+            self.assertEqual(main.ask(payload, request_from("10.0.0.2")).mode, "search")
 
     def test_search_fallback_returns_sources_without_api_key(self):
         response = answer_question(

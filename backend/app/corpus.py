@@ -18,11 +18,14 @@ class SourceChunk:
     text_ta: str
     desk_checked_at: str = "2026-11-09"
     human_verified_at: str | None = None
+    # Curated search aliases (EN + TA). Used for retrieval only; never shown as evidence.
+    keywords: str = ""
 
 
 SOURCES: tuple[SourceChunk, ...] = (
     SourceChunk(
         id="myscheme-pudhumai-penn",
+        keywords="scholarship assistance girl women female college degree diploma higher education government school உதவித்தொகை மாணவி பெண் கல்லூரி உயர்கல்வி பள்ளி",
         title="Moovalur Ramamirtham Ammaiyar Higher Education Assurance Scheme (Pudhumai Penn)",
         url="https://www.myscheme.gov.in/schemes/pudhumai-penn-scheme",
         owner="myScheme · Digital India Corporation, MeitY",
@@ -47,6 +50,7 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
     SourceChunk(
         id="myscheme-free-education-tn",
+        keywords="scholarship fee waiver tuition college degree undergraduate backward class BC MBC DNC denotified community உதவித்தொகை கட்டணம் கல்லூரி பிற்படுத்தப்பட்டோர் சீர்மரபினர்",
         title="Free Education Scheme · Tamil Nadu",
         url="https://www.myscheme.gov.in/schemes/fes",
         owner="myScheme · Digital India Corporation, MeitY",
@@ -71,6 +75,7 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
     SourceChunk(
         id="tnesevai-service-list",
+        keywords="certificate income community nativity caste e-Sevai esevai centre center apply application documents சான்றிதழ் வருமானச் சாதிச் இ-சேவை மையம் விண்ணப்பம் ஆவணங்கள்",
         title="Tamil Nadu e-Sevai · Service list",
         url="https://www.tnesevai.tn.gov.in/Pages/ServiceList.aspx",
         owner="Tamil Nadu e-Governance Agency (TNeGA)",
@@ -93,6 +98,7 @@ SOURCES: tuple[SourceChunk, ...] = (
     ),
     SourceChunk(
         id="cra-social-security-overview",
+        keywords="pension old age elderly senior citizen widow destitute disability disabled differently abled agricultural labourer ஓய்வூதியம் முதியோர் விதவை கைம்பெண் மாற்றுத்திறனாளி விவசாயத் தொழிலாளர்",
         title="Social Security Schemes · Tamil Nadu CRA",
         url="https://cra.tn.gov.in/about_schemes_t.php",
         owner="Commissionerate of Revenue Administration and Disaster Management, Tamil Nadu",

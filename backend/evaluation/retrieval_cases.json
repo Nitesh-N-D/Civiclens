@@ -6,5 +6,13 @@
   {"id":"ta-free-education","question":"சீர்மரபினர் மாணவர்களுக்கு கல்விக் கட்டண உதவி","expected_source":"myscheme-free-education-tn"},
   {"id":"en-esavai-documents","question":"What documents are needed for an e-Sevai certificate service?","expected_source":"tnesevai-service-list"},
   {"id":"ta-pension","question":"முதியோர் ஓய்வூதியத் திட்டம்","expected_source":"cra-social-security-overview"},
-  {"id":"out-of-scope","question":"volcanic telescope astronomy","expected_source":null}
+  {"id":"out-of-scope","question":"volcanic telescope astronomy","expected_source":null},
+  {"id":"ta-persona-student","question":"நான் கல்லூரியில் படிக்கிறேன், எனக்கு என்ன உதவித்தொகை கிடைக்கும்?","expected_source":"myscheme-pudhumai-penn"},
+  {"id":"en-persona-student","question":"I am a student, what scholarships can I get?","expected_source":"myscheme-pudhumai-penn"},
+  {"id":"en-persona-senior","question":"I am 67 years old, any pension?","expected_source":"cra-social-security-overview"},
+  {"id":"en-widow-pension","question":"widow pension","expected_source":"cra-social-security-overview"},
+  {"id":"off-weather","question":"what is the weather in Chennai","expected_source":null},
+  {"id":"off-bus","question":"Tamil Nadu bus timings","expected_source":null},
+  {"id":"off-cricket","question":"current government scheme for cricket","expected_source":null},
+  {"id":"off-passport","question":"how do I get a passport renewal","expected_source":null}
 ]

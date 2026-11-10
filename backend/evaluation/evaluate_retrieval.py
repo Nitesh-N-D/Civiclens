@@ -41,6 +41,9 @@ def main() -> None:
     print(f"Top-1 accuracy: {top1:.3f}")
     print(f"Out-of-scope abstention accuracy: {abstention_accuracy:.3f}")
     print("Limit: synthetic queries over four hand-authored records; no generation/citation entailment test.")
+    # Fail CI on regression: every in-scope case found, every out-of-scope case abstained.
+    if sum(score > 0 for score in reciprocal_ranks) < relevant_count or abstention_accuracy < 1.0:
+        raise SystemExit("Retrieval evaluation regressed")
 
 
 if __name__ == "__main__":

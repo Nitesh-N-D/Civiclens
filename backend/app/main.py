@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
@@ -6,7 +6,7 @@ from .corpus import SOURCES, public_schemes, public_source
 from .gemini import GeminiProvider
 from .models import AskRequest, AskResponse
 from .security import valid_bearer_token
-from .service import RequestBudget, answer_question
+from .service import AnswerCache, ClientLimiter, RequestBudget, answer_question
 
 app = FastAPI(title="CivicLens API", version="0.1.0", docs_url="/api/docs", redoc_url=None)
 app.add_middleware(
@@ -19,6 +19,17 @@ app.add_middleware(
 
 provider = GeminiProvider()
 budget = RequestBudget()
+client_limiter = ClientLimiter()
+answer_cache = AnswerCache()
+
+
+def _client_id(request: Request) -> str:
+    if settings.trust_forwarded_for:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        first = forwarded.split(",")[0].strip()
+        if first:
+            return first
+    return request.client.host if request.client else "unknown"
 
 
 @app.get("/api/health")
@@ -60,7 +71,12 @@ def admin_overview(authorization: str | None = Header(default=None)) -> dict[str
 
 
 @app.post("/api/ask", response_model=AskResponse)
-def ask(payload: AskRequest) -> AskResponse:
+def ask(payload: AskRequest, request: Request) -> AskResponse:
+    if not client_limiter.allow(
+        _client_id(request), settings.client_requests_per_minute, settings.client_daily_request_limit
+    ):
+        raise HTTPException(status_code=429, detail="Too many questions; please wait a minute.",
+                            headers={"Retry-After": "60"})
     return answer_question(
         payload.question,
         payload.language,
@@ -68,4 +84,5 @@ def ask(payload: AskRequest) -> AskResponse:
         budget,
         settings.requests_per_minute,
         settings.daily_request_limit,
+        answer_cache,
     )
