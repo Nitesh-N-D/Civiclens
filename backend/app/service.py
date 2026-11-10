@@ -109,11 +109,36 @@ class RequestBudget:
             if self._day != now.date():
                 self._day = now.date()
                 self._daily = 0
-            if len(self._minute) >= per_minute or self._daily >= per_day:
+            if len(self._minute) >= per_minute or not self._take_daily(per_day):
                 return False
             self._minute.append(now)
-            self._daily += 1
             return True
+
+    def _take_daily(self, per_day: int) -> bool:
+        if self._daily >= per_day:
+            return False
+        self._daily += 1
+        return True
+
+
+class PersistentBudget(RequestBudget):
+    """Shared Gemini budget whose daily count lives in PostgreSQL when DATABASE_URL is set.
+
+    The per-minute window stays in memory (one Render instance). If the database is missing or
+    unreachable, the in-memory daily count is used, so answers never depend on the database.
+    """
+
+    def __init__(self, bucket: str = "gemini") -> None:
+        super().__init__()
+        self._bucket = bucket
+
+    def _take_daily(self, per_day: int) -> bool:
+        from .db import claim_daily_slot
+
+        persisted = claim_daily_slot(self._bucket, per_day)
+        if persisted is None:
+            return super()._take_daily(per_day)
+        return persisted
 
 
 class ClientLimiter:

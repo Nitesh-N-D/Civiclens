@@ -5,10 +5,11 @@ from fastapi.responses import JSONResponse
 from .changes import CHANGES, public_change
 from .config import settings
 from .corpus import SOURCES, public_schemes, public_source
+from .db import database_status
 from .gemini import GeminiProvider
 from .models import AskRequest, AskResponse
 from .security import valid_bearer_token
-from .service import AnswerCache, ClientLimiter, RequestBudget, answer_question
+from .service import AnswerCache, ClientLimiter, PersistentBudget, answer_question
 
 app = FastAPI(title="CivicLens API", version="0.1.0", docs_url="/api/docs", redoc_url=None)
 app.add_middleware(
@@ -49,7 +50,7 @@ async def guard_requests(request: Request, call_next):
 
 
 provider = GeminiProvider()
-budget = RequestBudget()
+budget = PersistentBudget()
 client_limiter = ClientLimiter()
 answer_cache = AnswerCache()
 
@@ -70,6 +71,7 @@ def health() -> dict[str, object]:
         "provider": provider.public_status,
         "source_count": len(SOURCES),
         "admin_enabled": bool(settings.admin_token),
+        "database": database_status(),
     }
 
 

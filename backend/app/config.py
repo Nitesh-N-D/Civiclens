@@ -26,6 +26,8 @@ class Settings:
     client_daily_request_limit: int = max(1, int(os.getenv("CLIENT_DAILY_REQUEST_LIMIT", "40")))
     # Only enable behind a proxy you control (e.g. Render); otherwise clients can spoof the header.
     trust_forwarded_for: bool = os.getenv("TRUST_FORWARDED_FOR", "false").lower() == "true"
+    # Optional PostgreSQL (Supabase pooler) URL; the API works without it.
+    database_url: str = os.getenv("DATABASE_URL", "").strip()
     allowed_origins: tuple[str, ...] = _split_list(
         os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173")
     )
