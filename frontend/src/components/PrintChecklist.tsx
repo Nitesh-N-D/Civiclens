@@ -1,5 +1,5 @@
-import type { Copy } from "./copy";
-import type { Turn } from "./types";
+import type { Copy } from "../copy";
+import type { Turn } from "../types";
 
 /**
  * Print-only checklist for helpers (family members, e-Sevai staff, volunteers).

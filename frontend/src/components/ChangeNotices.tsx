@@ -1,5 +1,5 @@
-import type { Copy } from "./copy";
-import type { Change } from "./types";
+import type { Copy } from "../copy";
+import type { Change } from "../types";
 
 function ChangeBadge({ change, t }: { change: Change; t: Copy }) {
   return <span className={`change-badge change-${change.status}`}>{change.status === "official" ? t.changeOfficial : t.changeReported}</span>;
