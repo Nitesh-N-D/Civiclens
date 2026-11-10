@@ -38,3 +38,8 @@ services:
       # Optional Supabase transaction-pooler URL (see backend/.env.example). Empty = no database.
       - key: DATABASE_URL
         sync: false
+      # Optional maintainer sign-in (docs/guides/ADMIN_GUIDE.md). Publishable key only, never service_role.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false

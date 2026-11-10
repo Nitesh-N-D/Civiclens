@@ -28,6 +28,10 @@ class Settings:
     trust_forwarded_for: bool = os.getenv("TRUST_FORWARDED_FOR", "false").lower() == "true"
     # Optional PostgreSQL (Supabase pooler) URL; the API works without it.
     database_url: str = os.getenv("DATABASE_URL", "").strip()
+    # Optional Supabase Auth for maintainer sign-in. The publishable (anon) key is designed to be
+    # public; never put the service_role/secret key here.
+    supabase_url: str = os.getenv("SUPABASE_URL", "").strip()
+    supabase_publishable_key: str = os.getenv("SUPABASE_PUBLISHABLE_KEY", "").strip()
     allowed_origins: tuple[str, ...] = _split_list(
         os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173")
     )

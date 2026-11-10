@@ -4,14 +4,14 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from . import corpus_store
+from . import admin, corpus_store
+from .auth import Principal, authenticate, sign_in_configured
 from .changes import public_change
 from .config import settings
 from .corpus import public_schemes, public_source
 from .db import database_status
 from .gemini import GeminiProvider
-from .models import AskRequest, AskResponse
-from .security import valid_bearer_token
+from .models import AskRequest, AskResponse, SourceCheckRequest
 from .service import AnswerCache, ClientLimiter, PersistentBudget, answer_question
 
 
@@ -82,7 +82,13 @@ def health() -> dict[str, object]:
         "provider": provider.public_status,
         "source_count": len(corpus_store.active().sources),
         "corpus": corpus_store.active().origin,
-        "admin_enabled": bool(settings.admin_token),
+        "admin_enabled": bool(settings.admin_token) or sign_in_configured(),
+        # Public by design (Supabase publishable key); lets the maintainer page sign in.
+        "admin_sign_in": (
+            {"url": settings.supabase_url, "publishable_key": settings.supabase_publishable_key}
+            if sign_in_configured()
+            else None
+        ),
         "database": database_status(),
     }
 
@@ -104,21 +110,56 @@ def changes(language: str = "en") -> dict[str, list[dict[str, str]]]:
     return {"changes": [public_change(change, selected_language) for change in corpus_store.active().changes]}
 
 
+def _require(authorization: str | None, role: str) -> Principal:
+    """404 for anyone without access, so the admin surface is not discoverable."""
+    principal = authenticate(authorization)
+    if principal is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    if not principal.can(role):
+        raise HTTPException(status_code=403, detail="Your role cannot do this")
+    return principal
+
+
+def _can_write(principal: Principal) -> bool:
+    return principal.via == "supabase" and principal.can("reviewer")
+
+
 @app.get("/api/admin/overview")
 def admin_overview(authorization: str | None = Header(default=None)) -> dict[str, object]:
-    expected = settings.admin_token
-    if not valid_bearer_token(expected, authorization):
-        raise HTTPException(status_code=404, detail="Not found")
+    principal = _require(authorization, "viewer")
     source_rows = [public_source(source) for source in corpus_store.active().sources]
+    checks: list[dict] = []
+    audit: list[dict] = []
+    if settings.database_url:
+        try:
+            checks, audit = admin.recent_checks(), admin.recent_audit()
+        except Exception:  # noqa: BLE001 - the overview still works without the database
+            checks, audit = [], []
     return {
+        "you": {"email": principal.email, "role": principal.role, "via": principal.via},
         "sources": source_rows,
         "source_count": len(source_rows),
         "human_verified_count": sum(row["human_verified_at"] is not None for row in source_rows),
         "review_pending_count": sum(row["human_verified_at"] is None for row in source_rows),
         "provider": provider.public_status,
-        "monitoring": "not_configured",
-        "mutations_enabled": False,
+        "monitoring": "manual_checks" if settings.database_url else "not_configured",
+        "recent_checks": checks,
+        "recent_audit": audit,
+        "mutations_enabled": _can_write(principal),
     }
+
+
+@app.post("/api/admin/sources/{source_id}/checks", status_code=201)
+def record_source_check(
+    source_id: str, payload: SourceCheckRequest, authorization: str | None = Header(default=None)
+) -> dict[str, object]:
+    principal = _require(authorization, "reviewer")
+    if not _can_write(principal):
+        raise HTTPException(status_code=403, detail="Changes need a Supabase sign-in")
+    try:
+        return admin.record_source_check(principal, source_id, payload.outcome, payload.note.strip())
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Unknown source") from None
 
 
 @app.post("/api/ask", response_model=AskResponse)

@@ -5,7 +5,7 @@
 
 Each item was reproduced or verified during the audit unless marked otherwise.
 
-## Status (updated 10 Nov 2026, Phase 6)
+## Status (updated 10 Nov 2026, Phase 8)
 
 | ID | Status |
 |---|---|
@@ -17,9 +17,10 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-06 | **Fixed.** Brief's five health states; 429 cool-down honours `Retry-After`. |
 | TD-07 | Partly: numeric and lexical claim-evidence gate. No entailment model; human review still required. |
 | TD-08 | **Fixed.** 16 KB body limit, security headers, `no-store` on answers; sync handlers run in FastAPI's thread pool. |
+| TD-09 | **Fixed (Phase 8).** Supabase Auth sign-in; the API verifies each token with Supabase and takes the role (viewer/reviewer/maintainer) from `admin_roles` (migration `0005`). Writes need a Supabase sign-in and a reviewer role, and each is audit-logged in the same transaction. The static token is local-only and viewer-only. |
 | TD-10 | **Fixed.** MIT `LICENSE`. |
-| TD-12 | Partly: CI runs ruff, backend tests, retrieval eval, frontend type-check/build and `npm audit`. No frontend tests or ESLint. |
-| TD-11 | Partly: strings in `copy.ts`, types in `types.ts`, change and print components split out. `App.tsx` still holds most layout. |
+| TD-12 | **Fixed (Phase 8).** CI runs ruff, backend tests, the retrieval eval, ESLint, Vitest (component and integration tests), the frontend type-check/build and `npm audit`. No formatter is enforced. |
+| TD-11 | **Fixed (Phase 8).** `App.tsx` is state and composition only; API calls in `api.ts`, the theme in `hooks/useTheme.ts`, and each section in `components/`. |
 | TD-14 | **Fixed.** Corpus tokenised once at import. |
 | TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
 | TD-17 | Mostly fixed (Phases 6–7): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS; `0004` + `scripts/seed_corpus.py` move the corpus into PostgreSQL and the API serves it from there with a built-in fallback. Open: embeddings are not yet stored in the `VECTOR` column, and retrieval is still in-process lexical scoring rather than SQL full-text/vector search. |

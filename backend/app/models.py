@@ -57,3 +57,8 @@ class AskResponse(BaseModel):
     mode: Literal["ai", "search"]
     warning: str
     notices: list[ChangeNotice] = Field(default_factory=list)
+
+
+class SourceCheckRequest(BaseModel):
+    outcome: str = Field(pattern="^(reachable|changed|unreachable|manual_review)$")
+    note: str = Field(min_length=3, max_length=500)

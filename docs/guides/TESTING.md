@@ -5,8 +5,12 @@
 From `frontend/`:
 
 ```powershell
+npm.cmd run lint
+npm.cmd test
 npm.cmd run build
 ```
+
+Frontend tests (Vitest, jsdom, Testing Library) mock `fetch` and cover: language switching, asking a question and showing its citation, session history, the rate-limit and API-down fallbacks, the theme toggle, scheme search and category filters, the print checklist, and maintainer sign-in (the password goes only to Supabase, the token only as a bearer header, nothing in `localStorage`, reviewers can record a check, viewers cannot).
 
 From `backend/`:
 
@@ -25,14 +29,14 @@ With Uvicorn running on loopback, confirm:
 - `GET /api/schemes?language=ta` returns Tamil catalog cards with eligibility disabled and marked unverified.
 - `GET /api/changes?language=ta` returns Tamil change notices; each `reported` one says it is a news report.
 - Ask "Magalir Urimai Thogai": no sources, one notice labelled as a news report. Ask about old-age pension, then use **Print checklist** and check the print preview shows only the checklist.
-- With no `CIVICLENS_ADMIN_TOKEN`, `GET /api/admin/overview` returns 404; with a valid local bearer token it returns a read-only summary without keys.
+- With no `CIVICLENS_ADMIN_TOKEN` and no Supabase sign-in, `GET /api/admin/overview` returns 404; with the local token it returns a viewer-only summary without keys, and `POST /api/admin/sources/{id}/checks` returns 403.
 - `POST /api/ask` with a general Pudhumai Penn question returns source-search mode without keys.
 - An identifier-like question returns the privacy message without citations and without a provider call.
 - A situational question ("I am a student, what scholarships can I get?") returns relevant sources plus a privacy reminder.
 - An off-topic question ("what is the weather in Chennai") returns no sources.
 - More than 5 questions a minute from one client returns `429` with `Retry-After`.
 
-CI (`.github/workflows/ci.yml`) runs the backend tests, the retrieval evaluation (which fails on any regression), the frontend build, and `npm audit` on every push to `main` and every pull request.
+CI (`.github/workflows/ci.yml`) runs ruff, the backend tests, the retrieval evaluation (which fails on any regression), ESLint, the frontend tests, the frontend build, and `npm audit` on every push to `main` and every pull request.
 - A wrong/absent key returns a safe fallback, not a stack trace or key value.
 
 ## RAG evaluation status

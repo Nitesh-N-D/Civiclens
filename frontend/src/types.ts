@@ -11,4 +11,8 @@ export type AdminOverview = {
   provider: { state?: string; configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null };
   monitoring: string;
   mutations_enabled: boolean;
+  you?: { email: string; role: string; via: string };
+  recent_checks?: SourceCheck[];
+  recent_audit?: { id: number; actor: string; action: string; entity_id: string; created_at: string }[];
 };
+export type SourceCheck = { id: number; source_id: string; outcome: string; note?: string; checked_at: string };

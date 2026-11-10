@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { askQuestion, fetchChanges, fetchHealth, fetchSchemes, fetchSources, RateLimitedError } from "./api";
+import type { SignInConfig } from "./api";
 import { AdminPanel } from "./components/AdminPanel";
 import { BrandMark } from "./components/BrandMark";
 import { ChangeList } from "./components/ChangeNotices";
@@ -24,6 +25,7 @@ function App() {
   const [schemes, setSchemes] = useState<SchemeCard[]>([]);
   const [changes, setChanges] = useState<Change[]>([]);
   const [adminEnabled, setAdminEnabled] = useState(false);
+  const [signIn, setSignIn] = useState<SignInConfig | null>(null);
   const [serviceError, setServiceError] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const t = copy[language];
@@ -36,7 +38,12 @@ function App() {
   }, [language]);
 
   useEffect(() => {
-    fetchHealth().then((data) => setAdminEnabled(data.admin_enabled === true)).catch(() => setAdminEnabled(false));
+    fetchHealth()
+      .then((data) => {
+        setAdminEnabled(data.admin_enabled === true);
+        setSignIn(data.admin_sign_in ?? null);
+      })
+      .catch(() => setAdminEnabled(false));
     fetchSources().then(setSources).catch(() => setServiceError(true));
   }, []);
 
@@ -103,7 +110,7 @@ function App() {
           <p>{t.disclaimer}</p>
           <a href="https://www.myscheme.gov.in/" target="_blank" rel="noreferrer">{t.visitMyScheme} ↗</a>
         </footer>
-        {adminEnabled && <AdminPanel t={t} />}
+        {adminEnabled && <AdminPanel t={t} signIn={signIn} />}
       </main>
     </div>
   );
