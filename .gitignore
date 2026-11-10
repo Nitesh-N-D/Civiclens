@@ -11,3 +11,6 @@ dist/
 .mypy_cache/
 .ruff_cache/
 *.sqlite3
+CLAUDE.md
+AGENTS.md
+.claude/
