@@ -35,3 +35,6 @@ services:
       # Render terminates TLS in front of the service, so X-Forwarded-For is trustworthy here.
       - key: TRUST_FORWARDED_FOR
         value: "true"
+      # Optional Supabase transaction-pooler URL (see backend/.env.example). Empty = no database.
+      - key: DATABASE_URL
+        sync: false
