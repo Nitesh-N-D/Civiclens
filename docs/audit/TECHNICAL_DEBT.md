@@ -5,7 +5,7 @@
 
 Each item was reproduced or verified during the audit unless marked otherwise.
 
-## Status (updated 10 Nov 2026, Phase 2)
+## Status (updated 10 Nov 2026, Phase 5)
 
 | ID | Status |
 |---|---|
@@ -22,6 +22,7 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-11 | Partly: strings in `copy.ts`, types in `types.ts`, change and print components split out. `App.tsx` still holds most layout. |
 | TD-14 | **Fixed.** Corpus tokenised once at import. |
 | TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
+| TD-17 | Partly: `0002` adds pgvector `VECTOR(768)` + HNSW, EN/TA full-text indexes, aliases and change tables. Still no migration runner; the app does not read PostgreSQL yet. |
 
 ## S1
 

@@ -1,6 +1,11 @@
 # Database migration status
 
-`0001_initial_schema.sql` is a proposed PostgreSQL schema for a future curated corpus and source-review workflow. It is **not applied** and the current application does not connect to a database. The runtime still uses the small static Python corpus. The migration runner and version insertion are not implemented.
+| File | Adds |
+|---|---|
+| `0001_initial_schema.sql` | Source registry, versions, evidence chunks, schemes, claims, eligibility rules, review events |
+| `0002_search_and_change_tracking.sql` | pgvector + `VECTOR(768)` HNSW index, English and Tamil (`simple`) full-text GIN indexes, `scheme_aliases`, `scheme_changes` |
+
+Apply in order, each once, inside the transaction the file opens. `0001_initial_schema.sql` is a proposed PostgreSQL schema for a future curated corpus and source-review workflow. It is **not applied** and the current application does not connect to a database. The runtime still uses the small static Python corpus. The migration runner and version insertion are not implemented.
 
 Before applying this migration to any database, validate SQL against the selected PostgreSQL version, review source-content retention and provider terms, prepare a verified backup and restore procedure, then apply it to an empty non-production database. Do not point it at existing or production data without a reviewed, non-destructive migration plan.
 
