@@ -13,6 +13,9 @@ Copy `backend/.env.example` to `backend/.env`. The application reads only that p
 | `GEMINI_ENABLE_EMBEDDINGS` | Enable optional semantic retrieval in addition to lexical retrieval | `false` |
 | `GEMINI_REQUESTS_PER_MINUTE` | Local process request cap for generation | `10` |
 | `GEMINI_DAILY_REQUEST_LIMIT` | Local process generation cap per UTC day | `100` |
+| `CLIENT_REQUESTS_PER_MINUTE` | Per-visitor `/api/ask` limit per minute (429 + `Retry-After` above it). Lower to 2–3 if many visitors arrive at once | `5` |
+| `CLIENT_DAILY_REQUEST_LIMIT` | Per-visitor `/api/ask` limit per day. Lower to 25–30 if Gemini quota runs out | `40` |
+| `TRUST_FORWARDED_FOR` | Use `X-Forwarded-For` to identify visitors; enable only behind your own proxy | `false` |
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed to call the API | Local Vite origins |
 | `CIVICLENS_ADMIN_TOKEN` | Optional shared token for the local read-only maintainer overview | Empty; admin overview disabled |
 
