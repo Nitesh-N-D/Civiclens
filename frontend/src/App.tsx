@@ -6,6 +6,9 @@ import { ChangeList, ChangeNotices } from "./ChangeNotices";
 import type { Answer, Change, Citation, Turn } from "./types";
 import { PrintChecklist } from "./PrintChecklist";
 
+// Empty in local development (Vite proxies /api); set VITE_API_BASE when the API is on another origin.
+const API = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+
 type SchemeCard = { id: string; title: string; department: string; category: string; overview: string; url: string; source_id: string; status: string; eligibility_enabled: boolean };
 type AdminOverview = { sources: Citation[]; source_count: number; human_verified_count: number; review_pending_count: number; provider: { state?: string; configured: boolean; configured_keys: number; last_request_succeeded: boolean | null; last_failure_category: string | null; model: string | null }; monitoring: string; mutations_enabled: boolean };
 
@@ -56,7 +59,7 @@ function App() {
   }, [language]);
 
   useEffect(() => {
-    fetch("/api/health")
+    fetch(API + "/api/health")
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: { admin_enabled?: boolean }) => setAdminEnabled(data.admin_enabled === true))
       .catch(() => setAdminEnabled(false));
@@ -66,7 +69,7 @@ function App() {
     event.preventDefault();
     setAdminError(false);
     try {
-      const response = await fetch("/api/admin/overview", {
+      const response = await fetch(API + "/api/admin/overview", {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
       if (!response.ok) throw new Error("not authorized");
@@ -84,18 +87,18 @@ function App() {
   }
 
   useEffect(() => {
-    fetch("/api/sources")
+    fetch(API + "/api/sources")
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: { sources: Citation[] }) => setSources(data.sources ?? []))
       .catch(() => setServiceError(true));
   }, []);
 
   useEffect(() => {
-    fetch(`/api/schemes?language=${language}`)
+    fetch(`${API}/api/schemes?language=${language}`)
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: { schemes: SchemeCard[] }) => setSchemes(data.schemes ?? []))
       .catch(() => setSchemes([]));
-    fetch(`/api/changes?language=${language}`)
+    fetch(`${API}/api/changes?language=${language}`)
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: { changes: Change[] }) => setChanges(data.changes ?? []))
       .catch(() => setChanges([]));
@@ -110,7 +113,7 @@ function App() {
     setServiceError(false);
     setTurns((items) => [...items, { question: value, answer: { text: "", citations: [], mode: "search" } }]);
     try {
-      const response = await fetch("/api/ask", {
+      const response = await fetch(API + "/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: value, language }),

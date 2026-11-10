@@ -1,0 +1,37 @@
+# Render Blueprint for the CivicLens API (free plan). Review before applying; deploying publicly
+# needs the developer's approval. Secrets are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: civiclens-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements-lock.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: GEMINI_API_KEY_1
+        sync: false
+      - key: GEMINI_API_KEY_2
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_ENABLE_EMBEDDINGS
+        value: "false"
+      - key: GEMINI_REQUESTS_PER_MINUTE
+        value: "10"
+      - key: GEMINI_DAILY_REQUEST_LIMIT
+        value: "100"
+      - key: CLIENT_REQUESTS_PER_MINUTE
+        value: "5"
+      - key: CLIENT_DAILY_REQUEST_LIMIT
+        value: "40"
+      # Set to the Cloudflare Pages origin, e.g. https://civiclens.pages.dev
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Render terminates TLS in front of the service, so X-Forwarded-For is trustworthy here.
+      - key: TRUST_FORWARDED_FOR
+        value: "true"
