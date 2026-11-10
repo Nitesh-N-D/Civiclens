@@ -23,6 +23,8 @@ With Uvicorn running on loopback, confirm:
 - `GET /api/health` returns `status: ok` and no secrets.
 - `GET /api/sources` returns the curated public source list.
 - `GET /api/schemes?language=ta` returns Tamil catalog cards with eligibility disabled and marked unverified.
+- `GET /api/changes?language=ta` returns Tamil change notices; each `reported` one says it is a news report.
+- Ask "Magalir Urimai Thogai": no sources, one notice labelled as a news report. Ask about old-age pension, then use **Print checklist** and check the print preview shows only the checklist.
 - With no `CIVICLENS_ADMIN_TOKEN`, `GET /api/admin/overview` returns 404; with a valid local bearer token it returns a read-only summary without keys.
 - `POST /api/ask` with a general Pudhumai Penn question returns source-search mode without keys.
 - An identifier-like question returns the privacy message without citations and without a provider call.
@@ -35,4 +37,4 @@ CI (`.github/workflows/ci.yml`) runs the backend tests, the retrieval evaluation
 
 ## RAG evaluation status
 
-An initial offline lexical retrieval baseline is recorded in [`backend/evaluation/RAG_EVALUATION.md`](../../backend/evaluation/RAG_EVALUATION.md). It uses sixteen synthetic cases (including four off-topic and four first-person questions) over four hand-authored records and does not call Gemini. No generation-quality evaluation or citizen task study has been run. Current unit tests validate software safeguards only; they do not measure factual answer quality, bilingual comprehension, eligibility correctness, or claim entailment. Before enabling eligibility content, create a human-reviewed bilingual test set with source locators and gold citations, report answer correctness, citation precision/recall, unsupported-claim rate, abstention quality, and source freshness. Do not report zero hallucinations based solely on citation-ID checks.
+An initial offline lexical retrieval baseline is recorded in [`backend/evaluation/RAG_EVALUATION.md`](../../backend/evaluation/RAG_EVALUATION.md). It uses twenty synthetic cases (including six that must abstain, four first-person questions and three alternate-name or amount questions) over four hand-authored records and does not call Gemini. No generation-quality evaluation or citizen task study has been run. Current unit tests validate software safeguards only; they do not measure factual answer quality, bilingual comprehension, eligibility correctness, or claim entailment. Before enabling eligibility content, create a human-reviewed bilingual test set with source locators and gold citations, report answer correctness, citation precision/recall, unsupported-claim rate, abstention quality, and source freshness. Do not report zero hallucinations based solely on citation-ID checks.

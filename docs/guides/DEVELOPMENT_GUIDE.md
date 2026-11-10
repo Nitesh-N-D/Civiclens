@@ -26,5 +26,6 @@ Use the review lifecycle in `docs/research/PRODUCT_REQUIREMENTS.md`. A maintaine
 - Response errors do not contain provider messages, credentials, or tracebacks.
 - `GET /api/health` reports coarse configuration health only.
 - `GET /api/sources` returns public source metadata.
-- `POST /api/ask` takes `{ "question": "...", "language": "en" | "ta" }` and returns an answer mode, cited sources, and a caveat.
+- `POST /api/ask` takes `{ "question": "...", "language": "en" | "ta" }` and returns an answer mode, cited sources, a caveat, and `notices` (scheme change notices labelled `official` or `reported`).
+- `GET /api/changes?language=en|ta` lists tracked scheme changes. Add new ones in `backend/app/changes.py` with the evidence type, source URL and check date.
 - No prompt history or profile is persisted.

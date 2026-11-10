@@ -12,6 +12,7 @@
 - Retrieved source text is treated as untrusted data and cannot override the system instructions.
 - CORS allows only the configured local origins by default; local servers bind to loopback.
 - The optional maintainer overview is disabled without `CIVICLENS_ADMIN_TOKEN`, read-only, and compares a bearer token without returning it. The client keeps the entered token in memory only.
+- Scheme change notices are separate from answer evidence and say whether they come from an official page or a news report. The printable checklist contains only the general question, the cited answer and public links.
 - No production credentials, real citizen data, or deployment are configured.
 
 ## Important limits

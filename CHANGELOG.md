@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-10 — Phase 3: source freshness, change tracking, helper checklist
+
+- **Freshness re-check (TD-04):** every source re-checked against 2026 information on 10 Nov 2026. The CRA pension record now states the rates the official page gives (Rs 1,500 disability pension from 1 Jan 2023; Rs 1,200 for the others from Aug 2023), labelled as dated. Pudhumai Penn and the Free Education Scheme gained alternate names (Puthumai Penn, Moovalur Ramamirtham Ammaiyar, FES) as search keywords. The BC/MBC department page could not be fetched (its TLS certificate does not verify), so the Free Education record stays a directory lead.
+- **Scheme change tracking:** new `backend/app/changes.py` and `GET /api/changes`. Answers now carry `notices` for matching renames, continuations and rate revisions. Every notice says whether it comes from an official page or a news report, and news-only items (Pudhumai Penn continuation, the reported Magalir Urimai rename) are labelled as not confirmed by a Government Order. Notices are never used as answer evidence and are not attached to privacy-blocked questions.
+- **Helper mode:** a "Print checklist" button prints the question, the cited answer, official links with check dates, change notices, and four safety steps (confirm the rule, ask which documents, apply only through official channels, never share Aadhaar/bank/OTP). No personal data is printed.
+- **Frontend structure (TD-11, part):** UI strings moved to `src/copy.ts`; shared types to `src/types.ts`; new `ChangeNotices.tsx` and `PrintChecklist.tsx`.
+- **Docs:** guides moved to `docs/guides/`, with an index in `docs/README.md`. The root keeps README, CHANGELOG, SECURITY and LICENSE.
+- Tests: 26 unit tests (8 new). Retrieval evaluation: 20 cases, Recall@4 14/14, abstention 6/6.
+
 ## 2026-11-10 — Phase 2: blocker fixes
 
 - **Privacy filter (TD-01):** blocks identifiers and secrets only; questions describing a situation in Tamil or English are now answered, with a privacy reminder. The old behaviour that refused "I am a student…" was intentionally removed.
