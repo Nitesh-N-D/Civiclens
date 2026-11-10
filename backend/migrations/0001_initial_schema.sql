@@ -1,6 +1,7 @@
--- CivicLens PostgreSQL schema proposal.
--- This migration is intentionally not executed by the application.
--- Review provider terms, configure backups, and use a tested deployment process before applying it.
+-- CivicLens migration 0001: source registry, evidence and review schema.
+-- Applied by scripts/migrate.py (never by the API at runtime). Apply to a fresh database.
+
+BEGIN;
 
 CREATE TABLE schema_migrations (
     migration_version TEXT PRIMARY KEY,
@@ -163,3 +164,7 @@ CREATE TABLE review_events (
 CREATE INDEX review_events_entity_idx ON review_events(entity_type, entity_id, created_at DESC);
 
 -- Deliberately no citizen profiles, uploaded-document table, raw chat history, or identity fields.
+
+INSERT INTO schema_migrations (migration_version) VALUES ('0001_initial_schema');
+
+COMMIT;

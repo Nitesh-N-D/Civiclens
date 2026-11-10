@@ -1,6 +1,5 @@
 -- CivicLens migration 0002: full-text search, vector search and scheme change tracking (TD-17).
--- Not executed by the application. Apply only after 0001, to an empty non-production database
--- first (for example a free Supabase project the developer creates), following migrations/README.md.
+-- Applied by scripts/migrate.py after 0001 (never by the API at runtime).
 -- Additive only: no existing table or column is dropped or rewritten.
 
 BEGIN;
