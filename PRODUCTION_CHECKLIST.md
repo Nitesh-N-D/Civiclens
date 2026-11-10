@@ -2,7 +2,7 @@
 
 ## Product and content
 
-- [ ] Conduct 10–20 consent-based citizen interviews and task tests; record no unnecessary personal data.
+- [ ] ~~Citizen interviews~~ (out of scope, developer decision, 10 Nov 2026); instead pass the offline retrieval/answer evaluation in CI.
 - [ ] Choose a bounded pilot scope from user evidence.
 - [ ] Verify current controlling scheme orders, amendments, deadlines, and official application routes.
 - [ ] Confirm source access/reuse terms and permitted storage per source.

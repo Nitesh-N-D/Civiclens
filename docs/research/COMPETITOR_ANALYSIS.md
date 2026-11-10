@@ -29,7 +29,7 @@
 3. **Treat human assistance as part of the journey.** The user may need an e-Sevai center or department contact, not another screen.
 4. **Measure parity rather than asserting superiority.** Compare Tamil and English task completion, coverage, readability, source visibility, and route-to-application against existing official tools.
 5. **Minimize duplication.** Where an official portal already answers a question well, return the official route and explain it instead of copying state that will drift.
-6. **Treat Namma Arasu as the benchmark, not an obstacle (added 10 Nov 2026).** Before building further, run the same 10 representative questions through Namma Arasu, the myScheme chatbot, and the CivicLens prototype, in Tamil and English. Record answer correctness, whether a source and date were shown, whether conditions were explained, and whether the route to apply was clear. If Namma Arasu already does well on evidence and explanation, narrow CivicLens to what it does not do, or stop.
+6. **Treat Namma Arasu as the reference point, not an obstacle (added 10 Nov 2026).** *Hands-on WhatsApp benchmarking is out of scope (developer decision, 10 Nov 2026); compare against Namma Arasu's published scope instead.* Original proposal, kept for the record: Before building further, run the same 10 representative questions through Namma Arasu, the myScheme chatbot, and the CivicLens prototype, in Tamil and English. Record answer correctness, whether a source and date were shown, whether conditions were explained, and whether the route to apply was clear. If Namma Arasu already does well on evidence and explanation, narrow CivicLens to what it does not do, or stop.
 
 ## Positioning map (desk assessment, unverified by hands-on testing)
 

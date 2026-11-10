@@ -8,7 +8,7 @@ Priorities use citizen value, trust risk, and feasibility as qualitative judgmen
 | Priority | Feature | Why it belongs / acceptance idea | Gate or dependency |
 |---|---|---|---|
 | P0 (added 10 Nov 2026) | **Fix the blockers found in the Phase 0 audit** | Personal-context questions such as "நான் கல்லூரியில் படிக்கிறேன்…" must not be refused (TD-01); off-topic questions must abstain (TD-03); the default model must not be one that shuts down 1 Dec 2026 (TD-02). | [Technical debt](../audit/TECHNICAL_DEBT.md); model choice needs developer approval |
-| P0 (added 10 Nov 2026) | **Competitive benchmark** against Namma Arasu and the myScheme chatbot | Same 10 questions, TA + EN; decides whether to continue, narrow, or stop. | Manual; needs the developer's phone for WhatsApp |
+| ~~P0~~ Dropped | ~~Competitive benchmark against Namma Arasu~~ | Out of scope (developer decision, 10 Nov 2026). Differentiation rests on features official bots publicly lack: per-condition evidence, dates, and rename history. | — |
 | P0 (added 10 Nov 2026) | **Post-2026 freshness re-check** of every corpus record | Each record either cites a current GO/department page or is withdrawn; renamed schemes carry their old names as aliases. | Phase 2 |
 | P0 | Narrow, Tamil Nadu-only curated source set | Keep review work bounded; every record has official owner, canonical URL, effective date when available, checked date, and review status. | Phase 2 must confirm candidate sources and reuse/access conditions. |
 | P0 | Tamil and English question/search | Core inclusion need; accept a small validated task set in both languages and disclose unsupported language cases. | Fluent Tamil review and user interviews. |
@@ -24,4 +24,4 @@ Priorities use citizen value, trust risk, and feasibility as qualitative judgmen
 
 ## MVP success criteria to define after discovery
 
-Set baselines and numeric thresholds after interviews and task testing. Measure factual correctness, citation support, successful route-to-official-source, language comprehension, abstention quality, task time, and user trust. Do not use usage volume alone as evidence of public benefit.
+Citizen interviews are out of scope (developer decision, 10 Nov 2026); set thresholds from the offline evaluation set instead and revisit if real users are recruited later. Measure factual correctness, citation support, successful route-to-official-source, language comprehension, abstention quality, task time, and user trust. Do not use usage volume alone as evidence of public benefit.

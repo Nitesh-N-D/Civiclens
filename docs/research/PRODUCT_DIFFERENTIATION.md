@@ -25,7 +25,7 @@ The Government of Tamil Nadu's **Namma Arasu** WhatsApp chatbot (Jan 2026) alrea
   2. **Change awareness:** the 2026 change of government renamed several schemes. A citizen holding an old name, an old amount, or an old screenshot needs "this scheme is now called X; here is what changed and the GO". This is concrete and timely, and the official bots focus on current state, not reconciling history.
   3. **Central + state in one explanation**, with comparison: "these 3 schemes may apply; here is how they differ".
   4. **Helper-mode for e-Sevai operators and NGO volunteers:** shareable, printable, cited checklists. Haqdarshak shows assisted access is where outcomes happen.
-- **Kill criterion:** if hands-on testing shows Namma Arasu already gives cited, dated, condition-level explanations, CivicLens should narrow to helper-mode and change tracking, or stop. It should not be built as a duplicate.
+- **Kill criterion** (hands-on testing dropped, developer decision, 10 Nov 2026; re-check Namma Arasu's published feature list at each milestone): if Namma Arasu already gives cited, dated, condition-level explanations, CivicLens should narrow to helper-mode and change tracking, or stop. It should not be built as a duplicate.
 
 ## Differentiation principle
 

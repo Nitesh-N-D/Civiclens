@@ -22,7 +22,8 @@ No account, project, key, or billing was created during this audit.
 - **Prototype and small pilot: feasible within free tiers**, provided that (a) answers are cached, (b) per-client rate limits exist before public exposure (TD-05), and (c) search-only fallback stays first-class. At about 20–500 generations per day, Gemini is the binding constraint, not hosting.
 - **Production for the public: not sustainably free.** Free Gemini usage sends content to Google for product improvement (incompatible with citizens' personal details); Supabase Free has no backups; Render Free sleeps. A real launch needs either an approved budget or a sponsor/partner. That decision belongs to the developer, at the deployment gate.
 
-## Developer actions needed
+## Developer confirmations (10 Nov 2026)
 
-1. Open the AI Studio rate-limit dashboard for the project holding the keys, and record the actual RPM/RPD for `gemini-3.5-flash-lite`, `gemini-3.8-flash`, and `gemini-embedding-2`. The default-model choice (TD-02) depends on this.
-2. Confirm whether the two keys belong to **one project or two**. If one, the second key is only a credential fallback, which is what the code already assumes.
+- Both keys belong to **one free-tier project**, so they share one quota; the second key is a credential fallback only. The developer reports the quota runs out quickly.
+- AI Studio shows, for reference: `gemini-3.5-flash-lite` 1,048,576 input / 65,536 output tokens, Batch API 10,000,000 concurrent; `gemini-3.8-flash` 1,000,000 input / 64,000 output tokens, Batch API 3,000,000 concurrent. These are token and batch limits, **not** the interactive RPM/RPD that CivicLens consumes, so they don't change the design.
+- **Decision:** default `gemini-3.5-flash-lite` (the higher reported free RPD of the two). Server-side, the answer cache, per-client limits, and lexical-first retrieval with embeddings off keep Gemini calls to a minimum.

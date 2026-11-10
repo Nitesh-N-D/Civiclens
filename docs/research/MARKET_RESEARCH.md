@@ -87,8 +87,8 @@ The proposed initial scope fits ordinary source editing and lightweight developm
 7. **Inclusion and trust:** a chatbot may not fit low-literacy users or those without devices; preserve assisted and offline routes.
 8. **Existing alternatives:** myScheme/UMANG already offer discovery; incremental product value must be demonstrated.
 9. **Sustainability:** “free” services can pause, change quotas, restrict non-commercial use, or require paid plans.
-10. **Duplication of an official channel (added 10 Nov 2026):** Namma Arasu may already cover the core journey; benchmark before building further.
-11. **Provider model churn (added 10 Nov 2026):** the prototype's default `gemini-2.5-flash` shuts down 1 Dec 2026. Keep model IDs environment-driven and check the deprecations page at each milestone.
+10. **Duplication of an official channel (added 10 Nov 2026):** Namma Arasu may already cover the core journey; build only the evidence/change-tracking features it does not publicly offer.
+11. **Provider model churn (added 10 Nov 2026):** the old default `gemini-2.5-flash` shuts down 1 Dec 2026 (default switched to `gemini-3.5-flash-lite`). Keep model IDs environment-driven and check the deprecations page at each milestone.
 
 ## Recommended roadmap and gate
 

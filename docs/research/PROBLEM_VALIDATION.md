@@ -42,6 +42,8 @@ These claims need interviews and usability work. Avoid presenting them as measur
 
 ## Proposed validation work (before a public pilot)
 
+> **Out of scope (developer decision, 10 Nov 2026).** No interviews will be run; the plan below is kept for reference if that changes. Validation relies on desk evidence plus the offline evaluation set.
+
 Conduct 10–20 voluntary, consent-based interviews with a varied group: students, farmers, older adults or caregivers, women seeking welfare information, job seekers, small businesses, and community-service volunteers. Recruit across rural/urban settings and levels of digital confidence. Do not collect identity numbers or copies of personal documents.
 
 Ask participants to recount a recent real task: how they found the scheme or service, what they tried, where they got stuck, what source they trusted, what language they used, and whether they completed the task. Observe a task using public/sample information. Record failure points and outcomes, not unnecessary personal details.

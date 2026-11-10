@@ -3,7 +3,9 @@
 ## Current safeguards
 
 - API keys are read by the backend only from project-local environment configuration.
-- Requests are bounded to 1,200 characters; common identifiers and personal-detail patterns are blocked before retrieval or Gemini calls.
+- Requests are bounded to 1,200 characters. Identifiers and secrets (Aadhaar/account-length numbers, PAN, IFSC, phone, email, OTP/password statements, "my Aadhaar/bank/address is…" in EN and TA) are blocked before retrieval or Gemini calls. Situational context such as "I am a student" or "நான் கல்லூரியில் படிக்கிறேன்" is allowed, because it is the core use case, and adds a reminder that questions may reach Gemini's free tier.
+- `/api/ask` has a per-client limit (default 5/min, 40/day) in front of the shared Gemini budget, and returns `429` with `Retry-After`. `X-Forwarded-For` is trusted only when `TRUST_FORWARDED_FOR=true` (set it only behind your own proxy).
+- Generated answers are cached in memory for 12 h by normalised question text to conserve quota. Nothing is written to disk.
 - The API does not store chat prompts, generated answers, user profiles, or documents.
 - The Gemini adapter uses a bounded timeout, limited retry for transient failures, a quota-aware refusal on HTTP 429, and credential fallback only on key-specific 401/403. It never rotates keys to evade shared project quota.
 - Gemini output is schema-validated and citations are restricted to source IDs actually retrieved. Uncited or invalid output falls back to a non-generative response.

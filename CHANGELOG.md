@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-10 — Phase 2: blocker fixes
+
+- **Privacy filter (TD-01):** blocks identifiers and secrets only; questions describing a situation in Tamil or English are now answered, with a privacy reminder. The old behaviour that refused "I am a student…" was intentionally removed.
+- **Retrieval relevance (TD-03):** EN/TA stop-words, prefix matching for Tamil suffixes and plurals, curated per-source keywords, an absolute score floor, and a relative cut-off. Off-topic questions now return no sources. The evaluation grew from 8 to 16 cases and fails CI on regression.
+- **Default model (TD-02):** `gemini-3.5-flash-lite` (`gemini-2.5-flash` shuts down 1 Dec 2026).
+- **Quota protection (TD-05):** per-client rate limit with `Retry-After`; 12 h in-memory answer cache. The frontend shows a bilingual "please wait" message on 429 and no longer lists unrelated sources on errors.
+- Added the MIT `LICENSE` and GitHub Actions CI.
+- Dropped the Namma Arasu hands-on benchmark and citizen interviews from the plan (developer decision).
+
 ## 2026-11-10 — Phase 0/1 re-audit (documentation only)
 
 - Added `docs/audit/` (project audit, existing-system analysis, technical-debt register TD-01…TD-17, environment requirements, development safety).

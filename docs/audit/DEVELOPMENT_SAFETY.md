@@ -18,11 +18,10 @@
 | Creating cloud accounts or projects (Supabase, Render, Vercel, Cloudflare, Kaggle) | External and account-bound |
 | Any billing or paid-tier activation | Cost |
 | Public deployment or exposing a local port | Abuse and quota exhaustion (TD-05) |
-| Pushing to `origin` or merging to `main` | Shared history |
 | Bulk deletion, or deleting source/migration/config files | Irreversible |
 | Applying migrations to any non-throwaway database | Data |
-| Choosing the default Gemini model (TD-02) | Depends on quota visible only in the developer's AI Studio dashboard |
-| Choosing a licence (TD-10) | Legal |
+
+Decided by the developer (developer decision, 10 Nov 2026): licence is MIT; default model is `gemini-3.5-flash-lite`; pushing feature branches and merging to `main` (never force-push) and moving between phases need no further approval. Creating cloud accounts, billing, and paid services still do.
 
 ## Safe to do autonomously
 

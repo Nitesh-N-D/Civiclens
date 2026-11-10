@@ -5,6 +5,20 @@
 
 Each item was reproduced or verified during the audit unless marked otherwise.
 
+## Status (updated 10 Nov 2026, Phase 2)
+
+| ID | Status |
+|---|---|
+| TD-01 | **Fixed.** Only identifiers/secrets are blocked; situational context is allowed and adds a privacy reminder. Tests cover both. |
+| TD-02 | **Fixed.** Default `gemini-3.5-flash-lite` (developer confirmed both keys share one free-tier project). Embeddings stay `gemini-embedding-001` (supported to May 2028, off by default). |
+| TD-03 | **Fixed.** EN/TA stop-words, prefix matching, curated keywords, absolute score floor, relative cut-off; 4 off-topic cases in the eval, which now fails CI on regression. |
+| TD-05 | **Fixed.** Per-client limiter (5/min, 40/day default) with `Retry-After`, plus a 12 h in-memory answer cache. |
+| TD-06 | Partly: 429 now carries `Retry-After`. Health-state names still open. |
+| TD-10 | **Fixed.** MIT `LICENSE`. |
+| TD-12 | Partly: GitHub Actions CI (backend tests, retrieval eval, frontend build, `npm audit`). No linter yet. |
+| TD-14 | **Fixed.** Corpus tokenised once at import. |
+| TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
+
 ## S1
 
 ### TD-01: The privacy filter blocks ordinary personal-context questions in both languages

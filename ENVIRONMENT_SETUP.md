@@ -8,7 +8,7 @@ Copy `backend/.env.example` to `backend/.env`. The application reads only that p
 |---|---|---|
 | `GEMINI_API_KEY_1` | Primary server-side Gemini API key | Empty; source-search fallback |
 | `GEMINI_API_KEY_2` | Secondary credential for credential-specific failover | Empty |
-| `GEMINI_MODEL` | Gemini text generation model | `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Gemini text generation model | `gemini-3.5-flash-lite` |
 | `GEMINI_EMBEDDING_MODEL` | Gemini text embedding model | `gemini-embedding-001` |
 | `GEMINI_ENABLE_EMBEDDINGS` | Enable optional semantic retrieval in addition to lexical retrieval | `false` |
 | `GEMINI_REQUESTS_PER_MINUTE` | Local process request cap for generation | `10` |

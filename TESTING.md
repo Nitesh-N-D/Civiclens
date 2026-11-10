@@ -26,8 +26,13 @@ With Uvicorn running on loopback, confirm:
 - With no `CIVICLENS_ADMIN_TOKEN`, `GET /api/admin/overview` returns 404; with a valid local bearer token it returns a read-only summary without keys.
 - `POST /api/ask` with a general Pudhumai Penn question returns source-search mode without keys.
 - An identifier-like question returns the privacy message without citations and without a provider call.
+- A situational question ("I am a student, what scholarships can I get?") returns relevant sources plus a privacy reminder.
+- An off-topic question ("what is the weather in Chennai") returns no sources.
+- More than 5 questions a minute from one client returns `429` with `Retry-After`.
+
+CI (`.github/workflows/ci.yml`) runs the backend tests, the retrieval evaluation (which fails on any regression), the frontend build, and `npm audit` on every push to `main` and every pull request.
 - A wrong/absent key returns a safe fallback, not a stack trace or key value.
 
 ## RAG evaluation status
 
-An initial offline lexical retrieval baseline is recorded in [`backend/evaluation/RAG_EVALUATION.md`](backend/evaluation/RAG_EVALUATION.md). It uses eight synthetic cases over four hand-authored records and does not call Gemini. No generation-quality evaluation or citizen task study has been run. Current unit tests validate software safeguards only; they do not measure factual answer quality, bilingual comprehension, eligibility correctness, or claim entailment. Before enabling eligibility content, create a human-reviewed bilingual test set with source locators and gold citations, report answer correctness, citation precision/recall, unsupported-claim rate, abstention quality, and source freshness. Do not report zero hallucinations based solely on citation-ID checks.
+An initial offline lexical retrieval baseline is recorded in [`backend/evaluation/RAG_EVALUATION.md`](backend/evaluation/RAG_EVALUATION.md). It uses sixteen synthetic cases (including four off-topic and four first-person questions) over four hand-authored records and does not call Gemini. No generation-quality evaluation or citizen task study has been run. Current unit tests validate software safeguards only; they do not measure factual answer quality, bilingual comprehension, eligibility correctness, or claim entailment. Before enabling eligibility content, create a human-reviewed bilingual test set with source locators and gold citations, report answer correctness, citation precision/recall, unsupported-claim rate, abstention quality, and source freshness. Do not report zero hallucinations based solely on citation-ID checks.
