@@ -68,4 +68,5 @@ More detail: [`DEVELOPMENT_GUIDE.md`](DEVELOPMENT_GUIDE.md), [`TESTING.md`](TEST
 - The source corpus is hand-authored and static; no ingestion or monitoring worker exists.
 - Gemini and embeddings require keys and consume provider quota. The local daily request budget is process-local, not a production distributed quota.
 - The sensitive-content filter is best-effort and cannot guarantee detection of every personal detail.
+- Licensed under the [MIT License](LICENSE).
 - Eligibility checklists, comparison, editable admin review, automated source monitoring, and production hosting are not yet implemented.
