@@ -1,5 +1,5 @@
 import type { Language } from "./copy";
-import type { AdminOverview, SourceCheck, Answer, Change, Citation, SchemeCard } from "./types";
+import type { AdminOverview, SourceCheck, Answer, Change, Citation, ComparisonRow, EligibilityQuestion, EligibilityResult, SchemeCard } from "./types";
 
 // Empty in local development (Vite proxies /api); set VITE_API_BASE when the API is on another origin.
 export const API = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
@@ -32,6 +32,20 @@ export const askQuestion = (question: string, language: Language) =>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question, language }),
   });
+
+export const fetchEligibilityQuestions = (language: Language) =>
+  getJson<{ questions?: EligibilityQuestion[] }>(`/api/eligibility/questions?language=${language}`).then((data) => data.questions ?? []);
+
+/** Answers are coarse choices; the API evaluates them by rule and stores nothing. */
+export const checkEligibility = (profile: Record<string, string>, language: Language, schemeIds: string[] = []) =>
+  getJson<{ results: EligibilityResult[]; sources: Citation[] }>("/api/eligibility", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profile, language, scheme_ids: schemeIds }),
+  });
+
+export const compareSchemes = (ids: string[], language: Language) =>
+  getJson<{ schemes: ComparisonRow[]; sources: Citation[] }>(`/api/schemes/compare?ids=${ids.map(encodeURIComponent).join(",")}&language=${language}`);
 
 export const fetchAdminOverview = (token: string) =>
   getJson<AdminOverview>("/api/admin/overview", { headers: { Authorization: `Bearer ${token}` } });

@@ -16,3 +16,14 @@ export type AdminOverview = {
   recent_audit?: { id: number; actor: string; action: string; entity_id: string; created_at: string }[];
 };
 export type SourceCheck = { id: number; source_id: string; outcome: string; note?: string; checked_at: string };
+export type EligibilityQuestion = { field: string; options: string[]; purpose: string };
+export type EligibilityStatus = "appears_eligible" | "appears_ineligible" | "insufficient_information" | "requires_official_verification";
+export type EligibilityResult = {
+  scheme_id: string;
+  status: EligibilityStatus;
+  criteria: { id: string; label: string; field: string; outcome: "met" | "not_met" | "unknown"; source_id: string; basis: string; human_verified: boolean }[];
+  missing_fields: string[];
+  documents: { name: string; reason: string; criterion_id: string; source_id: string; mandatory: boolean; verification: string }[];
+  guidance: { route: string; steps: string[]; contact: string; source_id: string };
+};
+export type ComparisonRow = { scheme_id: string; criteria: string[]; documents: string[]; route: string; contact: string; source_id: string };

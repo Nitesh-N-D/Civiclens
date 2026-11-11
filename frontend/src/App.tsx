@@ -7,6 +7,7 @@ import { BrandMark } from "./components/BrandMark";
 import { ChangeList } from "./components/ChangeNotices";
 import { Conversation } from "./components/Conversation";
 import { Discovery } from "./components/Discovery";
+import { EligibilityChecker, SchemeComparison } from "./components/EligibilityChecker";
 import { Hero, TrustStrip } from "./components/Hero";
 import { SchemeExplorer } from "./components/SchemeExplorer";
 import { TopBar } from "./components/TopBar";
@@ -101,6 +102,8 @@ function App() {
             <>
               <Discovery t={t} sources={sources} serviceError={serviceError} onAsk={(prompt) => void submitQuestion(undefined, prompt)} />
               <SchemeExplorer t={t} schemes={schemes} />
+              <EligibilityChecker key={`eligibility-${language}`} t={t} language={language} schemes={schemes} />
+              <SchemeComparison key={`compare-${language}`} t={t} language={language} schemes={schemes} />
               {!!changes.length && <ChangeList changes={changes} t={t} />}
             </>
           )}

@@ -226,3 +226,40 @@ body{margin:0;background:var(--c2);color:var(--t1)}
 .theme-toggle:focus-visible,.language-switch button:focus-visible{outline:3px solid var(--c5);outline-offset:2px}
 .scheme-filters{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}.scheme-filters input,.scheme-filters select{font:inherit;font-size:16px;min-height:44px;padding:8px 12px;border:1px solid var(--c28);border-radius:9px;background:var(--c21);color:var(--t1)}.scheme-filters input{flex:1 1 220px;min-width:0}.scheme-filters select{flex:0 1 220px}.earlier-turn{margin-bottom:28px;opacity:.92}.earlier-turn h3{font:600 19px/1.35 "Segoe UI","Nirmala UI",sans-serif;color:var(--t76);margin:6px 0 12px;white-space:pre-wrap}
 @media print{body{background:#fff}.app-shell>*:not(main),main>*:not(.workspace),.workspace>*:not(.conversation),.conversation>*:not(.print-checklist){display:none!important}.print-checklist{display:block;color:#000;font-size:12pt;line-height:1.5}.print-checklist h1{font-size:18pt;margin:0}.print-checklist h2{font-size:13pt;margin:14pt 0 4pt}.print-answer{white-space:pre-wrap}.print-meta,.print-warning{font-size:9.5pt;color:#333}.print-checklist li{margin-bottom:5pt;word-break:break-all}.print-steps{list-style:none;padding-left:0}}
+
+/* Eligibility screening and comparison */
+.eligibility,.comparison{margin-top:40px;border-top:1px solid var(--line);padding-top:24px}
+.eligibility h2,.comparison h2{margin:6px 0 8px;font-size:28px;color:var(--ink)}
+.eligibility-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px}
+.eligibility-field{display:flex;flex-direction:column;gap:6px}
+.eligibility-field .field-label{font-weight:700;font-size:16px;color:var(--ink)}
+.eligibility-field select{min-height:46px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:16px;background:var(--c21);color:var(--ink)}
+.eligibility-field small,.field-note{font-size:15px;line-height:1.5;color:var(--muted)}
+.eligibility-actions{grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap}
+.secondary-button{min-height:44px;border:1px solid var(--green);background:transparent;color:var(--green-dark);border-radius:8px;padding:9px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.secondary-button:disabled{opacity:.55;cursor:not-allowed}
+.error-note{color:var(--t153);font-weight:600}
+.caveat{background:var(--c64);color:var(--t171);border-radius:9px;padding:10px 12px;font-size:15px;line-height:1.5}
+.eligibility-results{display:grid;gap:16px;margin-top:18px}
+.eligibility-card{border:1px solid var(--line);border-radius:12px;background:var(--c21);padding:16px 18px}
+.eligibility-card header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.eligibility-card h3{margin:0;font-size:21px;color:var(--ink)}
+.eligibility-card h4{margin:16px 0 6px;font-size:16px;color:var(--ink)}
+.status-badge{border-radius:99px;padding:5px 11px;font-size:14px;font-weight:700;background:var(--mint);color:var(--green-dark)}
+.status-appears_ineligible .status-badge{background:var(--c70);color:var(--t71)}
+.status-insufficient_information .status-badge{background:var(--soft);color:var(--muted)}
+.criteria-list,.document-list{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.criteria-list li{display:flex;gap:8px;align-items:flex-start;font-size:16px;line-height:1.5}
+.outcome-mark{width:22px;flex:none;text-align:center;font-weight:800}
+.outcome-met .outcome-mark{color:var(--green)}
+.outcome-not_met .outcome-mark{color:var(--t153)}
+.outcome-unknown .outcome-mark{color:var(--muted)}
+.guidance-steps{margin:6px 0;padding-left:22px;line-height:1.6}
+.compare-picker{border:0;padding:0;margin:8px 0 12px;display:flex;gap:16px;flex-wrap:wrap}
+.compare-picker legend{font-weight:700;margin-bottom:8px}
+.compare-picker label{display:flex;align-items:center;gap:8px;min-height:44px;font-size:16px}
+.compare-picker input{width:20px;height:20px}
+.compare-scroll{overflow-x:auto;margin-top:14px}
+.compare-table{border-collapse:collapse;width:100%;min-width:520px;background:var(--c21)}
+.compare-table th,.compare-table td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left;font-size:15px;line-height:1.5}
+.compare-table ul{margin:0;padding-left:18px}
