@@ -48,3 +48,16 @@ How it works:
 - `POST /api/admin/sources/{id}/checks` (reviewer, Supabase sign-in only): body `{"outcome": "reachable|changed|unreachable|manual_review", "note": "3–500 chars"}`.
 
 No access → 404. Signed in but the role is too low → 403.
+
+## Weekly source monitor
+
+The `Source monitor` GitHub Action (`.github/workflows/source-monitor.yml`) runs every Monday at 03:30 UTC, and you can also start it from the Actions tab. It uses the `DATABASE_URL` repository secret. For each official source it records a check in `source_checks` (shown in the maintainer overview), with a note starting `automated:`:
+
+- `reachable`: the page loaded and its visible text is the same as last time.
+- `changed`: the visible text differs. A reviewer should open the page and decide whether the record needs updating.
+- `unreachable`: the fetch failed or timed out.
+- `manual_review`: the page loaded but has no readable text (for example, a script-only page).
+
+It never changes answers or source text.
+
+**Known behaviour (11 Nov 2026):** GitHub's runners are outside India, and two Tamil Nadu government sites (`cra.tn.gov.in` and `tnesevai.tn.gov.in`) time out from them. Both load in a few seconds from India. Treat `unreachable` for those two as "not checked this week", not as the site being down. To check them, run `python scripts/monitor_sources.py` from `backend/` on a machine in India; it records to the same database.
