@@ -11,6 +11,11 @@ def _split_list(value: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in value.split(",") if part.strip())
 
 
+def _origins(value: str) -> tuple[str, ...]:
+    # Browsers send the origin without a trailing slash; "https://x.dev/" would never match.
+    return tuple(origin.rstrip("/") for origin in _split_list(value))
+
+
 @dataclass(frozen=True)
 class Settings:
     gemini_key_1: str = os.getenv("GEMINI_API_KEY_1", "").strip()
@@ -32,7 +37,7 @@ class Settings:
     # public; never put the service_role/secret key here.
     supabase_url: str = os.getenv("SUPABASE_URL", "").strip()
     supabase_publishable_key: str = os.getenv("SUPABASE_PUBLISHABLE_KEY", "").strip()
-    allowed_origins: tuple[str, ...] = _split_list(
+    allowed_origins: tuple[str, ...] = _origins(
         os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173")
     )
 

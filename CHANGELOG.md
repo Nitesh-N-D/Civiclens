@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-11 — Deployment
+
+- Live on free tiers: the web app at https://civiclens.nitesh-viva-ai.workers.dev (Cloudflare Workers) and the API at https://civiclens-api-xzm0.onrender.com (Render, with Supabase).
+- `ALLOWED_ORIGINS` is set to the web origin in `render.yaml`, and a trailing slash in the setting is now ignored.
+- The frontend CSP `connect-src` is narrowed from `*.onrender.com`/`*.supabase.co` to the exact API and Supabase project.
+- README and deployment guide record the live URLs and how to check them.
+
 ## 2026-11-11 — Phases 8–10: maintainers, eligibility, monitoring, evaluation
 
 - **Maintainer sign-in (TD-09):** Supabase Auth with viewer, reviewer and maintainer roles (`admin_roles`, migration `0005`). Reviewers record source checks, and each check is written to `audit_log` in the same transaction.

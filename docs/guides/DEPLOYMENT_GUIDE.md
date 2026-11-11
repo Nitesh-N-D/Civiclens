@@ -1,7 +1,24 @@
-# Deployment guide — preparation only
+# Deployment guide
 
-**Status:** Free-tier configuration prepared (Render + Cloudflare Pages + optional Supabase); nothing deployed.
-**Current runtime:** Vite client + FastAPI API + static in-process discovery corpus.
+**Status (11 Nov 2026):** deployed on free tiers.
+
+| Piece | Where | Settings |
+|---|---|---|
+| Web app | Cloudflare Workers static assets, <https://civiclens.nitesh-viva-ai.workers.dev> | Build `npm run build` in `frontend/`, output `dist`. Build variable `VITE_API_BASE=https://civiclens-api-xzm0.onrender.com` (public, not a secret). `frontend/public/_headers` sets the CSP, which allows `connect-src` to the API and the Supabase project only. |
+| API | Render free web service, <https://civiclens-api-xzm0.onrender.com> | `render.yaml`. Dashboard secrets: `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`. `ALLOWED_ORIGINS=https://civiclens.nitesh-viva-ai.workers.dev` (exact, no trailing slash). |
+| Database and maintainer sign-in | Supabase free project | Migrations `0001`–`0006` applied, corpus seeded, embeddings stored |
+
+### Checking the live system
+
+```bash
+curl https://civiclens-api-xzm0.onrender.com/api/health        # status ok, provider HEALTHY, database connected, corpus database
+curl -i -X OPTIONS https://civiclens-api-xzm0.onrender.com/api/ask -H "Origin: https://civiclens.nitesh-viva-ai.workers.dev" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: content-type"
+# expect 200 and access-control-allow-origin: https://civiclens.nitesh-viva-ai.workers.dev
+```
+
+If the web app shows the "API unavailable" message while `/api/health` works, `ALLOWED_ORIGINS` on Render doesn't exactly match the web origin. After changing it, redeploy the service. If you move the API or the Supabase project, update `VITE_API_BASE` and the `connect-src` in `_headers`, then rebuild the web app.
+
+**Original runtime notes:** Vite client and FastAPI API.
 
 ## Deployment shape
 
@@ -23,9 +40,9 @@ Do not create accounts, enable billing, provision resources, publish a URL, or c
 6. Configure an externally observable health check that returns no credential values.
 7. Do not apply the PostgreSQL migration until it has been reviewed against the selected server version and recovery plan.
 
-## Prepared free-tier configuration (not applied)
+## Free-tier configuration
 
-The repository now carries configuration for one candidate free-tier shape. The developer creates the accounts and approves any public URL; nothing here has been deployed.
+The deployment above follows this shape. The developer created the accounts.
 
 | Piece | Candidate | File |
 |---|---|---|

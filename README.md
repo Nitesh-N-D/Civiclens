@@ -2,6 +2,15 @@
 
 CivicLens is an independent, Tamil Nadu-first public information prototype. It helps people explore government service and scheme information with source links. It is not a government website and does not determine eligibility or submit applications.
 
+## Live
+
+| | URL |
+|---|---|
+| Web app (Cloudflare Workers) | <https://civiclens.nitesh-viva-ai.workers.dev> |
+| API (Render free) | <https://civiclens-api-xzm0.onrender.com> · health: [`/api/health`](https://civiclens-api-xzm0.onrender.com/api/health) |
+
+The API sleeps when idle on Render's free plan, so the first request after a quiet period can take about a minute.
+
 ## Current state
 
 - **Research and requirements (Phases 0–3):** in [`docs/research`](docs/research/) and [`docs/audit`](docs/audit/).
@@ -13,7 +22,7 @@ CivicLens is an independent, Tamil Nadu-first public information prototype. It h
 - **Source monitoring:** a weekly GitHub Action fetches each official source (honouring robots.txt), fingerprints its visible text and records a check for a person to review. It never changes answers by itself.
 - **Evaluation:** a 28-case EN/TA/mixed retrieval evaluation that runs in CI, plus an end-to-end answer evaluation. See [`docs/evaluation`](docs/evaluation/).
 - The four source records are **discovery summaries**. None has yet been human-verified as the current controlling rule.
-- **Not yet deployed:** `render.yaml` and the Cloudflare Pages headers are ready, but hosting needs accounts the developer creates ([deployment guide](docs/guides/DEPLOYMENT_GUIDE.md)).
+- **Deployed (11 Nov 2026):** the API is on Render with Supabase, and the web app is on Cloudflare Workers ([deployment guide](docs/guides/DEPLOYMENT_GUIDE.md)). It's still a pilot: no citizen testing or human source verification has been done yet.
 
 ## Requirements
 

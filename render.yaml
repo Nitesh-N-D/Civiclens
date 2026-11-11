@@ -1,5 +1,4 @@
-# Render Blueprint for the CivicLens API (free plan). Review before applying; deploying publicly
-# needs the developer's approval. Secrets are entered in the Render dashboard, never committed.
+# Render Blueprint for the CivicLens API (free plan), deployed at https://civiclens-api-xzm0.onrender.com. Secrets are entered in the Render dashboard, never committed.
 services:
   - type: web
     name: civiclens-api
@@ -29,9 +28,9 @@ services:
         value: "5"
       - key: CLIENT_DAILY_REQUEST_LIMIT
         value: "40"
-      # Set to the Cloudflare Pages origin, e.g. https://civiclens.pages.dev
+      # The deployed frontend origin (exact, no trailing slash). Add local origins only for testing.
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: https://civiclens.nitesh-viva-ai.workers.dev
       # Render terminates TLS in front of the service, so X-Forwarded-For is trustworthy here.
       - key: TRUST_FORWARDED_FOR
         value: "true"
