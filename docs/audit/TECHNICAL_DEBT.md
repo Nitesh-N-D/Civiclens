@@ -15,7 +15,7 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-04 | **Mostly fixed (10 Nov 2026).** Sources re-checked; CRA amounts now quoted with their 2023 dates; aliases added; change notices labelled official/news. Open: the BC/MBC department page (TLS error) and human verification of every record. |
 | TD-05 | **Fixed.** Per-client limiter (5/min, 40/day default) with `Retry-After`, plus a 12 h in-memory answer cache. |
 | TD-06 | **Fixed.** Brief's five health states; 429 cool-down honours `Retry-After`. |
-| TD-07 | Partly: numeric and lexical claim-evidence gate. No entailment model; human review still required. |
+| TD-07 | Partly: numeric and lexical claim–evidence gate. A live run of 8 answers had 23 claims and 0 rejections (see `docs/evaluation/RAG_EVALUATION_REPORT.md`). There is no entailment model, so a person still needs to review answers. |
 | TD-08 | **Fixed.** 16 KB body limit, security headers, `no-store` on answers; sync handlers run in FastAPI's thread pool. |
 | TD-09 | **Fixed (Phase 8).** Supabase Auth sign-in; the API verifies each token with Supabase and takes the role (viewer/reviewer/maintainer) from `admin_roles` (migration `0005`). Writes need a Supabase sign-in and a reviewer role, and each is audit-logged in the same transaction. The static token is local-only and viewer-only. |
 | TD-10 | **Fixed.** MIT `LICENSE`. |
@@ -23,7 +23,7 @@ Each item was reproduced or verified during the audit unless marked otherwise.
 | TD-11 | **Fixed (Phase 8).** `App.tsx` is state and composition only; API calls in `api.ts`, the theme in `hooks/useTheme.ts`, and each section in `components/`. |
 | TD-14 | **Fixed.** Corpus tokenised once at import. |
 | TD-15, TD-16 | **Fixed** (doc corrected; branches pushed). |
-| TD-17 | Mostly fixed (Phases 6–7): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS; `0004` + `scripts/seed_corpus.py` move the corpus into PostgreSQL and the API serves it from there with a built-in fallback. Open: embeddings are not yet stored in the `VECTOR` column, and retrieval is still in-process lexical scoring rather than SQL full-text/vector search. |
+| TD-17 | Mostly fixed (Phases 6–7): `0002` adds pgvector + HNSW and EN/TA full-text; `scripts/migrate.py` applies migrations once each; `0003` adds the persistent daily budget and RLS; `0004` + `scripts/seed_corpus.py` move the corpus into PostgreSQL and the API serves it from there with a built-in fallback. Phase 9: `0006` + `scripts/embed_corpus.py` store Gemini document embeddings in `embedding_768` with a text hash, and the API reuses them at startup with no Gemini call. Open: ranking is still done in process rather than with SQL full-text/vector search. That's fine at four documents, but should move to SQL as the corpus grows. |
 
 ## S1
 

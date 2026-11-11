@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-11 — Phases 8–10: maintainers, eligibility, monitoring, evaluation
+
+- **Maintainer sign-in (TD-09):** Supabase Auth with viewer, reviewer and maintainer roles (`admin_roles`, migration `0005`). Reviewers record source checks, and each check is written to `audit_log` in the same transaction.
+- **Stored embeddings (TD-17):** migration `0006` and `scripts/embed_corpus.py` store Gemini `gemini-embedding-001` vectors (768-d) with a text hash. The API reuses them at startup, so no Gemini embedding call is made per corpus load.
+- **Eligibility screening:** `POST /api/eligibility`, `GET /api/eligibility/questions` and `GET /api/schemes/compare`. The rules are deterministic and every condition is quoted from its source (a test checks this). Results are appears eligible, appears ineligible, insufficient information or requires official verification. Because no condition is human-verified yet, the last of these is the best possible result today. Document checklists are never marked mandatory. The bilingual UI explains why each question is asked, keeps answers only in memory, and offers a side-by-side comparison.
+- **Source monitoring:** `scripts/monitor_sources.py` and a weekly GitHub Action fetch each official https source (honouring robots.txt, at most 2 MB, 2 s apart). Each source's visible text is hashed and recorded in `source_checks` as reachable, changed, unreachable or needs manual review. Answers never change automatically. The baseline run on 11 Nov 2026 found all 4 sources reachable. The Action needs a `DATABASE_URL` repository secret.
+- **Evaluation:** 28 cases (EN, TA, mixed, wrong assumption, ambiguous, EN/TA prompt injection) with per-language metrics, plus `evaluate_answers.py` for the full answer pipeline. Results: Recall@4 20/20, MRR 1.0, abstention 8/8. A live run with 8 Gemini calls gave AI citation coverage 1.0 and 0 of 23 claims rejected. Reports are in `docs/evaluation/`. The answer review is waiting for a person.
+- **Retrieval:** a short query whose words all match one source's curated keywords is no longer abstained ("scholarship").
+- Tests: 86 backend (84% coverage) and 20 frontend (90.8% statements).
+
 ## 2026-11-10 — Phase 7: corpus in PostgreSQL, readable UI
 
 - **Corpus from the database (TD-17):** migration `0004` adds the fields the runtime needs (source status label and order, Tamil scheme fields, change-notice names). `scripts/seed_corpus.py` copies the built-in sources, schemes and change notices into PostgreSQL in one transaction; it is idempotent and keeps every distinct source text as its own `source_versions` row (new versions start `review_pending`, never auto-approved).

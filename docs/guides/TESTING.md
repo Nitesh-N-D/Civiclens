@@ -26,7 +26,8 @@ With Uvicorn running on loopback, confirm:
 
 - `GET /api/health` returns `status: ok` and no secrets.
 - `GET /api/sources` returns the curated public source list.
-- `GET /api/schemes?language=ta` returns Tamil catalog cards with eligibility disabled and marked unverified.
+- `GET /api/schemes?language=ta` returns Tamil catalog cards marked unverified, with eligibility screening enabled.
+- `POST /api/eligibility` with `{"profile": {"state": "tamil_nadu", "gender": "female", "school_type": "tn_government", "education": "undergraduate"}}` returns `requires_official_verification` for Pudhumai Penn, never `appears_eligible`.
 - `GET /api/changes?language=ta` returns Tamil change notices; each `reported` one says it is a news report.
 - Ask "Magalir Urimai Thogai": no sources, one notice labelled as a news report. Ask about old-age pension, then use **Print checklist** and check the print preview shows only the checklist.
 - With no `CIVICLENS_ADMIN_TOKEN` and no Supabase sign-in, `GET /api/admin/overview` returns 404; with the local token it returns a viewer-only summary without keys, and `POST /api/admin/sources/{id}/checks` returns 403.
@@ -39,6 +40,17 @@ With Uvicorn running on loopback, confirm:
 CI (`.github/workflows/ci.yml`) runs ruff, the backend tests, the retrieval evaluation (which fails on any regression), ESLint, the frontend tests, the frontend build, and `npm audit` on every push to `main` and every pull request.
 - A wrong/absent key returns a safe fallback, not a stack trace or key value.
 
-## RAG evaluation status
+## RAG evaluation
 
-An initial offline lexical retrieval baseline is recorded in [`backend/evaluation/RAG_EVALUATION.md`](../../backend/evaluation/RAG_EVALUATION.md). It uses twenty synthetic cases (including six that must abstain, four first-person questions and three alternate-name or amount questions) over four hand-authored records and does not call Gemini. No generation-quality evaluation or citizen task study has been run. Current unit tests validate software safeguards only; they do not measure factual answer quality, bilingual comprehension, eligibility correctness, or claim entailment. Before enabling eligibility content, create a human-reviewed bilingual test set with source locators and gold citations, report answer correctness, citation precision/recall, unsupported-claim rate, abstention quality, and source freshness. Do not report zero hallucinations based solely on citation-ID checks.
+From `backend/`:
+
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+.\.venv\Scripts\python.exe evaluation\evaluate_retrieval.py        # 28 cases, no Gemini calls (runs in CI)
+.\.venv\Scripts\python.exe evaluation\evaluate_answers.py          # full answer pipeline, search mode
+.\.venv\Scripts\python.exe evaluation\evaluate_answers.py --live 8 # up to 8 paced Gemini calls; writes answer_review.md
+```
+
+Use `--live` sparingly, because both keys share one free-tier quota. Results, the dataset and coverage are in [`docs/evaluation`](../evaluation/). Answers in `answer_review.md` need a person to review them before anyone relies on them. Don't report "zero hallucinations" from citation or gate checks alone.
+
+Coverage: `coverage run --source=app -m unittest discover -s tests` and `coverage report` from `backend/`, or `npm.cmd run coverage` from `frontend/`.

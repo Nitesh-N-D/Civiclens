@@ -11,7 +11,7 @@
 - Gemini output is schema-validated and citations are restricted to source IDs actually retrieved. Uncited or invalid output falls back to a non-generative response.
 - Retrieved source text is treated as untrusted data and cannot override the system instructions.
 - CORS allows only the configured local origins by default; local servers bind to loopback.
-- The optional maintainer overview is disabled without `CIVICLENS_ADMIN_TOKEN`, read-only, and compares a bearer token without returning it. The client keeps the entered token in memory only.
+- The maintainer area is hidden (404) unless the caller has a role. Supabase access tokens are verified with Supabase, cached only as a hash, and kept in memory by the client.
 - Scheme change notices are separate from answer evidence and say whether they come from an official page or a news report. The printable checklist contains only the general question, the cited answer and public links.
 - Request bodies over 16 KB are refused (413). API responses send `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, a JSON-only Content-Security-Policy and `Cache-Control: no-store` on answers.
 - Generated claims whose numbers do not appear in the cited source, or which share almost no words with it, are dropped before display.
@@ -21,9 +21,12 @@
 
 - The personal-information filter uses patterns and is not comprehensive. Do not enter personal or sensitive details. On Gemini's unpaid services, user content may be used to improve products and could be reviewed by humans; the backend must never be presented as safe for private case details.
 - Citation membership does not prove a generated sentence is entailed by a cited passage. Human review and an evaluation set are required before public eligibility answers.
-- The quota cap is in-memory and resets on process restart; it is not sufficient protection for a public multi-instance deployment.
-- No production user authentication or edit-capable admin interface exists. The optional overview uses one shared local token and is unsuitable for a public service. Do not expose the development server publicly.
+- With `DATABASE_URL` set, the daily Gemini budget is stored in PostgreSQL and survives restarts. The per-client limiter and answer cache are in memory per process.
+- Maintainers sign in with Supabase Auth and get roles from `admin_roles`. Reviewers can only record source checks, and each one is audit-logged. Nothing in the admin area edits answers or source text. The static `CIVICLENS_ADMIN_TOKEN` is local-only and viewer-only.
+- Eligibility screening accepts only fixed answer options (unknown fields are dropped), keeps answers in the browser tab's memory only, and doesn't store or log them. Its responses are `no-store`.
 - Government source URLs, access terms, and current rules have not all been verified.
+
+Test results: [`docs/evaluation/SECURITY_TEST_REPORT.md`](docs/evaluation/SECURITY_TEST_REPORT.md).
 
 ## Before a public pilot
 

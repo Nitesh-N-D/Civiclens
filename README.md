@@ -4,14 +4,16 @@ CivicLens is an independent, Tamil Nadu-first public information prototype. It h
 
 ## Current state
 
-- Phase 0–3 research, source audit, requirements, and architecture baseline are in [`docs/research`](docs/research/).
-- Phase 4 interface includes Tamil/English language switching and a responsive, accessible layout.
-- Phase 5 API provides lexical retrieval, optional Gemini vector retrieval, source-grounded structured Gemini responses, citation ID validation, privacy filtering, bounded retries, and a search-only fallback.
-- Phase 6 includes a bilingual catalog of two scheme directory leads. Both are explicitly marked unverified, and eligibility matching stays disabled.
-- The optional maintainer overview is disabled by default and read-only; it displays review status but cannot edit content.
-- The current four source records are **discovery summaries**. They are not cleared as current scheme rules; no authoritative eligibility answer should be inferred from them.
-- A proposed PostgreSQL schema is in [`backend/migrations`](backend/migrations/); the running prototype does not yet connect to a database.
-- No production deployment, service account, billing, or government integration is configured.
+- **Research and requirements (Phases 0–3):** in [`docs/research`](docs/research/) and [`docs/audit`](docs/audit/).
+- **Interface:** Tamil and English throughout, a responsive and accessible layout, a dark theme, scheme search, session history and a printable helper checklist.
+- **Answers:** hybrid retrieval (lexical, plus optional Gemini embeddings stored in pgvector), source-grounded Gemini answers with citation and claim–evidence checks, a privacy filter, per-client limits, and a cited search-only fallback whenever Gemini is unavailable.
+- **Eligibility screening:** a voluntary questionnaire that screens Pudhumai Penn and the Free Education Scheme against conditions quoted word for word from each scheme's source. It also gives a document checklist (never marked mandatory), application guidance and a side-by-side comparison. Because no condition has been verified by a person yet, the best possible result is *"requires official verification"*.
+- **Data:** with `DATABASE_URL` set, the corpus, embeddings, daily Gemini budget, source checks and audit log live in Supabase PostgreSQL. Row-level security is on for every table. Without it, the built-in records keep working.
+- **Maintainers:** Supabase Auth sign-in with viewer, reviewer and maintainer roles. Reviewers can record source checks, and each check is audit-logged.
+- **Source monitoring:** a weekly GitHub Action fetches each official source (honouring robots.txt), fingerprints its visible text and records a check for a person to review. It never changes answers by itself.
+- **Evaluation:** a 28-case EN/TA/mixed retrieval evaluation that runs in CI, plus an end-to-end answer evaluation. See [`docs/evaluation`](docs/evaluation/).
+- The four source records are **discovery summaries**. None has yet been human-verified as the current controlling rule.
+- **Not yet deployed:** `render.yaml` and the Cloudflare Pages headers are ready, but hosting needs accounts the developer creates ([deployment guide](docs/guides/DEPLOYMENT_GUIDE.md)).
 
 ## Requirements
 
@@ -63,10 +65,10 @@ More detail (index: [`docs/README.md`](docs/README.md)): [`DEVELOPMENT_GUIDE.md`
 
 ## Known limitations
 
-- No citizen interviews have been conducted.
-- Source access/reuse terms and latest controlling government orders remain to be verified.
-- The source corpus is hand-authored and static; no ingestion or monitoring worker exists.
-- Gemini and embeddings require keys and consume provider quota. The local daily request budget is process-local, not a production distributed quota.
-- The sensitive-content filter is best-effort and cannot guarantee detection of every personal detail.
+- No citizen interviews or user studies have been run, and the answer review is still waiting for a person (an agent pre-review only).
+- The corpus has four hand-authored summaries. The latest Government Orders and the sources' reuse terms still need checking.
+- Eligibility conditions are quoted from directory summaries, not verified rules, so screening never says "eligible".
+- Gemini's free tier may use submitted text to improve Google products, so don't enter personal details. The privacy filter uses patterns and can be bypassed.
+- The claim–evidence gate is a heuristic, not an entailment check.
+- The per-client limiter and answer cache are held in memory per process. Only the daily budget is shared, through the database.
 - Licensed under the [MIT License](LICENSE).
-- Eligibility checklists, comparison, editable admin review, automated source monitoring, and production hosting are not yet implemented.
