@@ -101,8 +101,14 @@ def _vectors(provider: GeminiProvider, index: _Index) -> list[list[float]] | Non
         return None
     with _index_lock:
         if index.vectors is None:
-            contents = [source.text_en + "\n" + source.text_ta for source in index.sources]
-            index.vectors = provider.embed(contents, "RETRIEVAL_DOCUMENT")
+            # Stored vectors from PostgreSQL when every source has one (no Gemini call);
+            # otherwise embed once per corpus and keep the result in memory.
+            stored = corpus_store.active().vectors
+            if stored and all(source.id in stored for source in index.sources):
+                index.vectors = [list(stored[source.id]) for source in index.sources]
+            else:
+                contents = [corpus_store.embedding_text(source) for source in index.sources]
+                index.vectors = provider.embed(contents, "RETRIEVAL_DOCUMENT")
     return index.vectors
 
 

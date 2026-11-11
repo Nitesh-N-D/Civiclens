@@ -6,10 +6,12 @@ database (seeded by scripts/seed_corpus.py). A database that is down, empty or r
 rows never breaks answering: the last good corpus stays active.
 """
 
+import hashlib
+import json
 import logging
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .changes import CHANGES, SchemeChange
@@ -28,6 +30,17 @@ class Corpus:
     schemes: dict[str, dict[str, Any]]
     changes: tuple[SchemeChange, ...]
     origin: str  # "built_in" or "database"
+    # Stored document embeddings (chunk id -> 768 floats) that match the current text and model.
+    vectors: dict[str, tuple[float, ...]] = field(default_factory=dict)
+
+
+def embedding_text(source: SourceChunk) -> str:
+    """The exact text a source is embedded from; the stored hash is taken over this."""
+    return source.text_en + "\n" + source.text_ta
+
+
+def embedding_text_hash(source: SourceChunk) -> str:
+    return hashlib.sha256(embedding_text(source).encode("utf-8")).hexdigest()
 
 
 BUILT_IN = Corpus(SOURCES, SCHEMES, CHANGES, "built_in")
@@ -96,6 +109,12 @@ SELECT id, name_en, name_ta, department, department_ta, category, category_ta,
 FROM schemes
 WHERE publication_status <> 'retired' AND source_id IS NOT NULL
 ORDER BY id
+"""
+
+_VECTORS_SQL = """
+SELECT id, embedding_768::text, embedding_model, embedding_text_hash
+FROM evidence_chunks
+WHERE active AND embedding_768 IS NOT NULL
 """
 
 _CHANGES_SQL = """
@@ -179,6 +198,7 @@ def load_from_database() -> Corpus | None:
         source_rows = conn.execute(_SOURCES_SQL).fetchall()
         scheme_rows = conn.execute(_SCHEMES_SQL).fetchall()
         change_rows = conn.execute(_CHANGES_SQL).fetchall()
+        vector_rows = conn.execute(_VECTORS_SQL).fetchall()
     sources = tuple(s for s in map(source_from_row, source_rows) if s is not None)
     if len(sources) < len(source_rows):
         log.warning("skipped %d invalid source rows", len(source_rows) - len(sources))
@@ -187,4 +207,21 @@ def load_from_database() -> Corpus | None:
     source_ids = {s.id for s in sources}
     schemes = dict(r for r in map(scheme_from_row, scheme_rows) if r[1]["source_id"] in source_ids)
     changes = tuple(c for c in map(change_from_row, change_rows) if c is not None)
-    return Corpus(sources, schemes, changes, "database")
+    return Corpus(sources, schemes, changes, "database", vectors_from_rows(vector_rows, sources))
+
+
+def vectors_from_rows(rows: list[tuple], sources: tuple[SourceChunk, ...]) -> dict[str, tuple[float, ...]]:
+    """Keep only vectors made by the configured model from the chunk's current text."""
+    by_id = {source.id: source for source in sources}
+    vectors: dict[str, tuple[float, ...]] = {}
+    for chunk_id, raw, model, text_hash in rows:
+        source = by_id.get(chunk_id)
+        if source is None or model != settings.embedding_model or text_hash != embedding_text_hash(source):
+            continue
+        try:
+            values = tuple(float(v) for v in json.loads(raw))
+        except (TypeError, ValueError):
+            continue
+        if len(values) == 768:
+            vectors[chunk_id] = values
+    return vectors

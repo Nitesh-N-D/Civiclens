@@ -67,3 +67,30 @@ class RefreshTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StoredVectorTests(unittest.TestCase):
+    def _row(self, source, model=None, text_hash=None, size=768):
+        values = "[" + ",".join(["0.1"] * size) + "]"
+        return (source.id, values, model or corpus_store.settings.embedding_model,
+                text_hash or corpus_store.embedding_text_hash(source))
+
+    def test_matching_vector_is_kept(self):
+        vectors = corpus_store.vectors_from_rows([self._row(SOURCES[0])], SOURCES)
+        self.assertEqual(len(vectors[SOURCES[0].id]), 768)
+
+    def test_stale_text_other_model_wrong_size_or_unknown_id_are_dropped(self):
+        rows = [
+            self._row(SOURCES[0], text_hash="0" * 64),
+            self._row(SOURCES[1], model="some-other-embedding"),
+            self._row(SOURCES[2], size=3),
+            ("not-a-source", "[0.1]", corpus_store.settings.embedding_model, "x"),
+            (SOURCES[3].id, "not json", corpus_store.settings.embedding_model,
+             corpus_store.embedding_text_hash(SOURCES[3])),
+        ]
+        self.assertEqual(corpus_store.vectors_from_rows(rows, SOURCES), {})
+
+    def test_hash_changes_when_text_changes(self):
+        from dataclasses import replace
+        edited = replace(SOURCES[0], text_en=SOURCES[0].text_en + " Updated.")
+        self.assertNotEqual(corpus_store.embedding_text_hash(edited), corpus_store.embedding_text_hash(SOURCES[0]))
