@@ -57,7 +57,8 @@ class RetrievalTests(unittest.TestCase):
         self.assertEqual(len(english), 2)
         self.assertEqual(len(tamil), 2)
         self.assertEqual(english[0].id, tamil[0].id)
-        self.assertTrue(all(not item.eligibility_enabled for item in english + tamil))
+        # Screening is offered, but the rules are still labelled unverified.
+        self.assertTrue(all(item.eligibility_enabled for item in english + tamil))
         self.assertTrue(all("not verified" in item.status.lower() for item in english))
 
     def test_lexical_retrieval_ranks_relevant_public_record(self):

@@ -4,14 +4,14 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from . import admin, corpus_store
+from . import admin, corpus_store, eligibility
 from .auth import Principal, authenticate, sign_in_configured
 from .changes import public_change
 from .config import settings
 from .corpus import public_schemes, public_source
 from .db import database_status
 from .gemini import GeminiProvider
-from .models import AskRequest, AskResponse, SourceCheckRequest
+from .models import AskRequest, AskResponse, EligibilityRequest, SourceCheckRequest
 from .service import AnswerCache, ClientLimiter, PersistentBudget, answer_question
 
 
@@ -55,7 +55,7 @@ async def guard_requests(request: Request, call_next):
         response.headers.setdefault(name, value)
     if not request.url.path.startswith(DOCS_PATHS):
         response.headers.setdefault("Content-Security-Policy", API_CSP)
-    if request.url.path == "/api/ask":
+    if request.url.path in ("/api/ask", "/api/eligibility"):
         response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -108,6 +108,35 @@ def schemes(language: str = "en"):
 def changes(language: str = "en") -> dict[str, list[dict[str, str]]]:
     selected_language = "ta" if language == "ta" else "en"
     return {"changes": [public_change(change, selected_language) for change in corpus_store.active().changes]}
+
+
+def _cited_sources(source_ids: set[str]) -> list[dict[str, str | None]]:
+    return [public_source(s) for s in corpus_store.active().sources if s.id in source_ids]
+
+
+def _available_schemes(requested: list[str]) -> list[str]:
+    known = [scheme_id for scheme_id in corpus_store.active().schemes if scheme_id in eligibility.CRITERIA]
+    return [scheme_id for scheme_id in requested if scheme_id in known] if requested else known
+
+
+@app.get("/api/eligibility/questions")
+def eligibility_questions(language: str = "en") -> dict[str, object]:
+    return {"questions": eligibility.questions("ta" if language == "ta" else "en")}
+
+
+@app.post("/api/eligibility")
+def eligibility_check(payload: EligibilityRequest) -> dict[str, object]:
+    """Deterministic screening; nothing is stored, logged or sent to Gemini."""
+    results = [eligibility.assess(s, payload.profile, payload.language) for s in _available_schemes(payload.scheme_ids)]
+    cited = {row["source_id"] for result in results for row in result["criteria"]}
+    return {"results": results, "sources": _cited_sources(cited)}
+
+
+@app.get("/api/schemes/compare")
+def compare(ids: str = "", language: str = "en") -> dict[str, object]:
+    requested = [part for part in ids.split(",") if part][:4]
+    rows = eligibility.compare_rows(_available_schemes(requested), "ta" if language == "ta" else "en")
+    return {"schemes": rows, "sources": _cited_sources({row["source_id"] for row in rows})}
 
 
 def _require(authorization: str | None, role: str) -> Principal:

@@ -62,3 +62,10 @@ class AskResponse(BaseModel):
 class SourceCheckRequest(BaseModel):
     outcome: str = Field(pattern="^(reachable|changed|unreachable|manual_review)$")
     note: str = Field(min_length=3, max_length=500)
+
+
+class EligibilityRequest(BaseModel):
+    # Coarse, voluntary choices only (see eligibility.PROFILE_FIELDS); unknown keys are ignored.
+    profile: dict[str, str] = Field(default_factory=dict, max_length=12)
+    scheme_ids: list[str] = Field(default_factory=list, max_length=10)
+    language: Literal["en", "ta"] = "en"

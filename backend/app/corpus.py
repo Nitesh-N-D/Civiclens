@@ -167,6 +167,7 @@ def public_source(chunk: SourceChunk) -> dict[str, str | None]:
 
 def public_schemes(language: str = "en") -> list[SchemeCard]:
     from . import corpus_store  # late import: corpus_store imports this module
+    from .eligibility import CRITERIA
 
     corpus = corpus_store.active()
     by_id = {source.id: source for source in corpus.sources}
@@ -185,6 +186,6 @@ def public_schemes(language: str = "en") -> list[SchemeCard]:
             url=source.url,
             source_id=source.id,
             status=("தகுதி விதிகள் சரிபார்க்கப்படவில்லை" if is_tamil else "Eligibility rules not verified"),
-            eligibility_enabled=False,
+            eligibility_enabled=scheme_id in CRITERIA,
         ))
     return cards
