@@ -85,6 +85,23 @@ def lexical_scores(query: str, index: _Index | None = None) -> list[float]:
     return scores
 
 
+def keyword_covered(query: str, index: _Index) -> bool:
+    """True when every query term matches a curated keyword of one source.
+
+    Curated aliases are a deliberate relevance signal; this rescues short queries such as
+    "scholarship" whose words are shared by several sources and so score below the absolute floor
+    in a small corpus. A single unrelated word ("cricket") keeps the query below the floor.
+    """
+    terms = set(query_tokens(query))
+    if not terms:
+        return False
+    for source in index.sources:
+        keywords = set(tokens(source.keywords))
+        if all(any(matches(term, keyword) for keyword in keywords) for term in terms):
+            return True
+    return False
+
+
 def cosine_similarity(first: list[float], second: list[float]) -> float:
     if len(first) != len(second) or not first:
         return 0.0
@@ -128,7 +145,7 @@ def retrieve(query: str, provider: GeminiProvider, limit: int = 4) -> list[tuple
         vector_scores = None
 
     best_semantic = max(vector_scores, default=0.0) if vector_scores else 0.0
-    if maximum < MIN_LEXICAL_SCORE and best_semantic < MIN_SEMANTIC_SCORE:
+    if maximum < MIN_LEXICAL_SCORE and best_semantic < MIN_SEMANTIC_SCORE and not keyword_covered(query, index):
         return []
 
     combined = []

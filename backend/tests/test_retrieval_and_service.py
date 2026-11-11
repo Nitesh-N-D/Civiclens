@@ -71,6 +71,11 @@ class RetrievalTests(unittest.TestCase):
     def test_unmatched_query_returns_no_candidates(self):
         self.assertEqual(retrieve("volcanic telescope astronomy", NoProvider()), [])
 
+    def test_short_query_matching_curated_keywords_is_not_abstained(self):
+        self.assertTrue(retrieve("scholarship", NoProvider()))
+        self.assertEqual(retrieve("cricket", NoProvider()), [])
+        self.assertEqual(retrieve("scholarship cricket", NoProvider()), [])
+
     def test_privacy_filter_blocks_identifiers_before_retrieval_or_generation(self):
         for question in (
             "My Aadhaar number is 123456789012",
